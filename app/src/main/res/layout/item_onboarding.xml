@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:layout_gravity="center_vertical"
+        android:gravity="start">
+        <TextView
+            android:id="@+id/progressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Step 1 of 3"
+
+            android:textColor="#FF6B00"
+            android:layout_marginBottom="20dp"
+            android:textStyle="bold"
+            android:textSize="14sp" />
+
+        <ImageView
+        android:id="@+id/imageOnboarding"
+        android:layout_width="match_parent"
+        android:layout_height="240dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/onbroading_01"
+        android:background="@drawable/bg_badge_orange"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:id="@+id/badgeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/bg_badge_orange"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="6dp"
+        android:text="DISCOVER"
+        android:textColor="#FF6B00"
+        android:textStyle="bold"
+        android:textSize="12sp" />
+
+
+    <TextView
+        android:id="@+id/titleOnboarding"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Find Events That"
+        android:textColor="#0F172A"
+        android:textStyle="bold"
+        android:textSize="22sp" />
+
+    <TextView
+        android:id="@+id/titleHighlight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Match You"
+        android:textColor="#FF6B00"
+        android:textStyle="bold"
+        android:textSize="22sp" />
+
+    <!-- Mô tả -->
+    <TextView
+        android:id="@+id/descOnboarding"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Explore thousands of campus activities, from academic workshops to social events, all in one place."
+        android:textColor="#6B7280"
+        android:textSize="14sp" />
+
+        <LinearLayout
+            android:id="@+id/listContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:drawablePadding="8dp"
+                android:text="Personalized event recommendations"
+                android:textColor="#0F172A"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:drawablePadding="8dp"
+                android:text="Never miss important deadlines"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:drawablePadding="8dp"
+                android:text="Filter by location and interests"
+                android:textColor="#0F172A"
+                android:textSize="14sp"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+
+
+</LinearLayout>
+
+    </FrameLayout>

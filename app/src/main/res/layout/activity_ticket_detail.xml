@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F6F8">
+
+    <!-- HEADER -->
+    <LinearLayout
+        android:id="@+id/headerTop"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="@android:color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
+            android:background="@drawable/bg_circle_white"
+            android:src="@drawable/ic_back"
+            android:contentDescription="@string/back"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/tv_header_detail_transaction"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="@string/pdam_detail_transaction_"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/btnReport"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:padding="8dp"
+            android:background="@drawable/bg_circle_white"
+            android:src="@drawable/report"
+            android:contentDescription="@string/report"
+            app:tint="@color/primary" />
+    </LinearLayout>
+
+
+    <!-- SCROLL CONTENT -->
+    <ScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="16dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/headerTop"
+        app:layout_constraintBottom_toTopOf="@id/btnCancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@android:color/white">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tvTicketTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Ticket Title"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textColor="@color/black" />
+
+                    <!-- QR -->
+                    <ImageView
+                        android:id="@+id/imgQrCode"
+                        android:layout_width="220dp"
+                        android:layout_height="220dp"
+                        android:layout_gravity="center"
+                        android:layout_marginVertical="28dp"
+                        android:background="#EFEFEF" />
+
+                    <!-- ITEMS -->
+                    <!-- Ticket Code -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvTicketCode"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ticket Code:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/TicketCode"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="VN-001-ABC"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Date -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvDateLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Date:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvDateValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="21 Sep 2025"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Registered Date -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvRegisteredDateLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Registered Date:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvRegisteredDateValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="20 Sep 2025"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Event Date -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvEventDateLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Event Date:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvEventDateValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="25 Sep 2025"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Address -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvAddressLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Address:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvAddressValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="123 Nguyen Van Linh"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Student Name -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvStudentNameLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Student Name:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvStudentNameValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Nguyen Van A"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Student Code -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/tvStudentCodeLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Student Code:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvStudentCodeValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="B21DCCN001"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                    <!-- Status -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <TextView
+                            android:id="@+id/tvStatusLabel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Status:"
+                            android:textStyle="bold"
+                            android:textSize="15sp"
+                            android:textColor="#000" />
+
+                        <TextView
+                            android:id="@+id/tvStatusValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="Pending"
+                            android:textSize="14sp"
+                            android:textColor="#444"
+                            android:layout_marginStart="8dp"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnCancel"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_margin="18dp"
+        android:text="@string/pdam_back_to_homepage"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        app:backgroundTint="@color/primary"
+        app:cornerRadius="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

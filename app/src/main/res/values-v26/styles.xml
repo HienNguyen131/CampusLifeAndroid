@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MyFilterButton" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="cornerRadius">12dp</item>
+        <item name="strokeColor">#F76B10</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">#F76B10</item>
+        <item name="android:layout_margin">6dp</item>
+        <item name="android:paddingHorizontal">18dp</item>
+    </style>
+</resources>

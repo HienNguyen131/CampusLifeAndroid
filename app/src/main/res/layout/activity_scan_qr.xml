@@ -1,0 +1,80 @@
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <androidx.camera.view.PreviewView
+        android:id="@+id/previewView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomSheet"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan QR Code"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/qrFrame"
+        android:layout_width="260dp"
+        android:layout_height="260dp"
+        android:layout_marginTop="170dp"
+        android:src="@drawable/bg_qr_frame"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+
+
+    <LinearLayout
+        android:id="@+id/bottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_white_round_top"
+        android:padding="20dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Position QR Code in Frame"
+            android:textColor="#111111"
+            android:textColorHint="#9E9E9E"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Align the code within the frame. It will scan automatically."
+            android:textSize="14sp"
+            android:textColor="#111111"
+            android:textColorHint="#9E9E9E"
+            android:layout_marginTop="8dp"/>
+
+        <Button
+            android:id="@+id/btnEnterCode"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Enter Code"
+            android:textAllCaps="false"
+            android:backgroundTint="#FF7E00"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="20dp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

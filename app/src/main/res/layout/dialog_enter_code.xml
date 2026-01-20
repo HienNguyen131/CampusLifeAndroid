@@ -1,0 +1,43 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@drawable/bg_white_round_top"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:text="Enter Event Code"
+        android:textSize="18sp"
+        android:textColor="#111111"
+        android:textColorHint="#9E9E9E"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:text="Enter the event code displayed at the venue"
+        android:layout_marginTop="8dp"
+        android:textSize="14sp"
+        android:textColor="#111111"
+        android:textColorHint="#9E9E9E"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:id="@+id/edtEventCode"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="20dp"
+        android:hint="Enter code"
+        android:background="@drawable/bg_input"
+        android:padding="12dp"/>
+
+    <Button
+        android:id="@+id/btnVerifyCode"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="24dp"
+        android:text="Verify Code"
+        android:backgroundTint="#CCCCCC"
+        android:textColor="@android:color/white"/>
+</LinearLayout>

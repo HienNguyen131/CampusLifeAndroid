@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application
+        android:usesCleartextTraffic="true"
+
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.CampusLife"
+        tools:targetApi="31">
+        <service
+            android:name=".fcm.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <activity
+            android:name=".activity.SplashActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.OnboardingActivity" />
+        <activity android:name=".activity.LoginActivity" />
+        <activity
+            android:name=".activity.MainActivity"/>
+
+        <activity android:name=".activity.ListActivity" />
+        <activity android:name=".activity.EventDetailActivity" />
+        <activity android:name=".activity.TicketDetailActivity" />
+        <activity android:name=".activity.ReportActivity" />
+        <activity android:name=".activity.SubmitReportActivity" />
+        <activity android:name=".activity.FeedbackActivity" />
+        <activity android:name=".activity.MiniGameActivity" />
+        <activity android:name=".activity.ProfileDetailActivity" />
+        <activity android:name=".activity.CalendarActivity" />
+        <activity android:name=".activity.SearchActivity" />
+        <activity android:name=".activity.MiniGameResultActivity" />
+        <activity android:name=".activity.SeriesDetailActivity" />
+        <activity android:name=".activity.ListSeriesActivity" />
+        <activity android:name=".activity.NotificationActivity" />
+        <activity android:name=".activity.ForgotActivity" />
+        <activity android:name=".activity.SearchRegisActivity" />
+        <activity
+            android:name=".activity.CheckinResultActivity"
+            android:exported="false" />
+
+        <activity android:name=".activity.ScanQRActivity" />
+    </application>
+
+
+</manifest>

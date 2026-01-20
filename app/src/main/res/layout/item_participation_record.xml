@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="12dp"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/card_white"
+    android:elevation="3dp">
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvScore"
+            android:padding="6dp"
+            android:layout_margin="5dp"
+            android:background="@drawable/chip_verified"
+            android:text="Score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="#2C7A7B"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tvType"
+            android:padding="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@drawable/chip_yellow"
+            android:text="Type"
+            android:textSize="13sp"
+            android:textColor="#E65100"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="National Innovation Summit 2025"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="#111"
+        android:maxLines="5"
+        />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:text="Date"
+                android:textColor="#666"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/tvDate"
+                android:text="09:15 AM"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="#111"/>
+        </LinearLayout>
+
+
+
+</LinearLayout>

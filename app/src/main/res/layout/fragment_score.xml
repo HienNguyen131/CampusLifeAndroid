@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true"
+    android:background="#F4F6F9">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Score"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:textColor="#111"
+            android:paddingVertical="8dp" />
+
+
+        <include layout="@layout/item_semester_summary"/>
+
+        <LinearLayout
+            android:id="@+id/layoutScores"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+
+            <LinearLayout
+                android:id="@+id/boxScore1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/score_box_yellow"
+                android:elevation="4dp"
+                android:clipToOutline="true">
+
+                <TextView
+                    android:id="@+id/tvLabelScore1"
+                    android:text="Training"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textColor="#8D6E63"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tvScore1"
+                    android:text="000"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:textColor="#5D4037"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <Space android:layout_width="12dp" android:layout_height="match_parent"/>
+
+            <LinearLayout
+                android:id="@+id/boxScore2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/score_box_blue"
+                android:elevation="4dp"
+                android:clipToOutline="true">
+
+                <TextView
+                    android:id="@+id/tvLabelScore2"
+                    android:text="Social Work"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#1565C0"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tvScore2"
+                    android:text="000"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24sp"
+                    android:textColor="#0D47A1"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+            <Space android:layout_width="12dp" android:layout_height="match_parent"/>
+
+            <LinearLayout
+                android:id="@+id/boxScore3"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="16dp"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@drawable/score_box_orange"
+                android:elevation="4dp"
+                android:clipToOutline="true">
+
+                <TextView
+                    android:id="@+id/tvLabelScore3"
+                    android:text="Business"
+                    android:textStyle="bold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#EF6C00"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:id="@+id/tvScore3"
+                    android:text="000"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:textColor="#E65100"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:layout_marginTop="28dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Participation Records"
+            android:textStyle="bold"
+            android:textColor="#222"
+            android:textSize="18sp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvParticipationTraing"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="10dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"
+            tools:listitem="@layout/item_participation_record"/>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">CampusLife</string>
+    <string name="desc_profile">Your profile</string>
+    <string name="desc_back">bach</string>
+    <string name="desc_event_list">Category List</string>
+    <string name="title_category">Category name</string>
+    <string name="Create_by">Create_by</string>
+    <string name="desc_event_image">Category img</string>
+    <string name="profile_title">Profile</string>
+    <string name="profile_name">Aayush Kriti</string>
+    <string name="app_version">App Version. 01.000.01</string>
+    <string name="cd_avatar">User avatar</string>
+    <string name="cd_chevron">Open</string>
+    <string name="_placeholder">Title</string>
+    <string name="manage_profile">Manage Profile</string>
+
+    <string name="manage_support">Reset password</string>
+    <string name="manage_logout">Log out</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="full_name">Full Name</string>
+    <string name="class_name">Class Name</string>
+    <string name="department">Department</string>
+    <string name="phone">Phone</string>
+    <string name="address">Address</string>
+    <string name="studentcode">Studen code</string>
+    <string name="save">Save</string>
+    <string name="back">Back</string>
+    <string name="created_by_fmt">Created by: %1$s</string>
+    <string name="max_point_fmt">Max point: %1$d</string>
+    <string name="register_until_fmt">Register until: %1$s</string>
+    <string name="register_unavailable">Register unavailable</string>
+    <string name="register_closed">Registration closed</string>
+    <string name="register_now">Register now</string>
+    <string name="search">Search</string>
+    <string name="pdam_back_to_homepage">Cancel schedule</string>
+    <string name="pdam_detail_transaction_">Detail ticket</string>
+    <string name="report">Report</string>
+
+
+</resources>

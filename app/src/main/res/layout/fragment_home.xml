@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="1dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guidelineEnd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="1dp" />
+
+    <LinearLayout
+        android:id="@+id/topBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="24dp"
+        android:layout_marginStart="10dp"
+        android:background="@color/white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="@id/guidelineStart"
+        app:layout_constraintEnd_toEndOf="@id/guidelineEnd">
+
+        <ImageView
+            android:id="@+id/ivProfile"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_profile_2"
+            android:contentDescription="@string/desc_profile" />
+
+        <LinearLayout
+            android:id="@+id/llWelcome"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingBottom="10dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome to"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                android:textColor="#111827" />
+
+            <TextView
+                android:id="@+id/txtUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="username"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/ivSearch"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_search" />
+        <ImageView
+            android:id="@+id/ivNoti"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:padding="8dp"
+            android:src="@drawable/ic_notify" />
+
+    </LinearLayout>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/topBar"
+        app:layout_constraintStart_toStartOf="@id/guidelineStart"
+        app:layout_constraintEnd_toEndOf="@id/guidelineEnd"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+
+    <LinearLayout
+            android:id="@+id/rvCategories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/background_primary"
+            android:paddingTop="2dp"
+            android:paddingBottom="10dp">
+
+
+            <!-- Categories -->
+            <TextView
+                android:id="@+id/txtCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Choose By Category ✨"
+                android:layout_marginStart="10dp"
+                android:textSize="20sp"
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
+
+        <!-- Upcoming activities -->
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="9dp"
+                android:layout_marginTop="5dp"
+                app:chipSpacingHorizontal="8dp"
+                app:singleLine="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTranningPoint"
+                    style="@style/Chip.Pill.Orange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Training Point"
+                    app:chipIcon="@drawable/ic_tranning"
+
+                    app:chipIconSize="18dp"
+                    app:chipIconVisible="true" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipBussiness"
+                    style="@style/Chip.Pill.Orange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Business"
+                    app:chipIcon="@drawable/ic_bussiness"
+                    app:chipIconSize="18dp"
+                    app:chipIconVisible="true" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSocial"
+                    style="@style/Chip.Pill.Orange"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:text="Social"
+                    app:chipIcon="@drawable/ic_social"
+                    app:chipIconSize="18dp"
+                    app:chipIconVisible="true" />
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/txtUpcoming"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Upcoming activity"
+                    android:textColor="@android:color/black"
+                    android:layout_marginStart="10dp"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/txtAllupcoming"
+                    app:layout_constraintBaseline_toBaselineOf="@id/txtAllupcoming"/>
+
+                <TextView
+                    android:id="@+id/txtAllupcoming"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See all"
+                    android:textColor="@color/primary"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    android:layout_marginEnd="15dp"
+                    app:layout_constraintBaseline_toBaselineOf="@id/txtUpcoming"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvUpcoming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            tools:listitem="@layout/item_event_upcoming" />
+
+        <ProgressBar
+                android:id="@+id/pbLoading"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Không có activity trong tháng"
+                android:textStyle="italic"
+                android:visibility="gone"/>
+
+            <!-- For you -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp">
+
+                <TextView
+                    android:id="@+id/txtForYou"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Activity for you"
+                    android:layout_margin="9dp"
+                    android:textColor="@android:color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/txtAllForYou"
+                    app:layout_constraintBaseline_toBaselineOf="@id/txtAllForYou"/>
+
+
+                <TextView
+                    android:id="@+id/txtAllForYou"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="See all"
+                    android:textColor="@color/primary"
+                    android:layout_marginEnd="15dp"
+                    android:textSize="14sp"
+                    android:textStyle="italic"
+                    app:layout_constraintBaseline_toBaselineOf="@id/txtForYou"
+                    app:layout_constraintEnd_toEndOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvForYou"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textColor="@android:color/black"
+                android:scrollbars="none"
+                tools:listitem="@layout/item_event_upcoming" />
+
+            <ProgressBar
+                android:id="@+id/pbForYou"
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvEmptyForYou"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Không có activity nào cho bạn"
+                android:textStyle="italic"
+                android:visibility="gone"/>
+        <!--   Series     -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp">
+
+            <TextView
+                android:id="@+id/txtSeries"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Series of events"
+                android:textColor="@android:color/black"
+                android:layout_margin="9dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/txtAllSeries"
+                app:layout_constraintBaseline_toBaselineOf="@id/txtAllSeries"/>
+
+
+            <TextView
+                android:id="@+id/txtAllSeries"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="See all"
+                android:textColor="@color/primary"
+                android:layout_marginEnd="15dp"
+                android:textSize="14sp"
+                android:textStyle="italic"
+                app:layout_constraintBaseline_toBaselineOf="@id/txtSeries"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSeries"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:overScrollMode="never"
+            android:nestedScrollingEnabled="false"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:scrollbars="none"
+            tools:listitem="@layout/item_event_series" />
+
+        <ProgressBar
+            android:id="@+id/pbSeries"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvEmptySeries"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Không có activity nào cho bạn"
+            android:textStyle="italic"
+            android:visibility="gone"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

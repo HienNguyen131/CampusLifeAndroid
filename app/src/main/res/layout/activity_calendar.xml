@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_primary">
+
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp"
+        android:background="@color/white"
+        android:elevation="4dp">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/primary" />
+
+        <TextView
+            android:id="@+id/txtTilte"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingStart="12dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            tools:text="Calendar" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp" />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/monthHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:paddingVertical="16dp"
+        android:background="@color/white">
+
+        <ImageView
+            android:id="@+id/btnPrevMonth"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_left"
+            app:tint="@color/primary"
+            android:background="@drawable/bg_circle_touch" />
+
+        <TextView
+            android:id="@+id/txtMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="October 2025"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:paddingHorizontal="20dp" />
+
+        <ImageView
+            android:id="@+id/btnNextMonth"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:padding="6dp"
+            android:src="@drawable/ic_right"
+            app:tint="@color/primary"
+            android:background="@drawable/bg_circle_touch" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/weekdayHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="12dp"
+        android:paddingBottom="8dp"
+        android:gravity="center"
+        android:background="@color/white">
+
+        <TextView style="@style/WeekdayItem" android:text="Mon"/>
+        <TextView style="@style/WeekdayItem" android:text="Tue"/>
+        <TextView style="@style/WeekdayItem" android:text="Wed"/>
+        <TextView style="@style/WeekdayItem" android:text="Thu"/>
+        <TextView style="@style/WeekdayItem" android:text="Fri"/>
+        <TextView style="@style/WeekdayItem" android:text="Sat"/>
+        <TextView style="@style/WeekdayItem" android:text="Sun"/>
+    </LinearLayout>
+
+
+    <!-- =============== CALENDAR GRID =============== -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/calendarRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="12dp"
+        android:background="@color/white"
+        android:overScrollMode="never"
+        tools:listitem="@layout/item_calendar_day" />
+
+</LinearLayout>

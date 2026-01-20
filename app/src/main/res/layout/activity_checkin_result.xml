@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/imgResult"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_success"/>
+
+    <TextView
+        android:id="@+id/tvResultTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Check-In Successful!"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginTop="20dp"/>
+
+    <TextView
+        android:id="@+id/tvResultMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You’re all set for the event"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="10dp"/>
+    <Button
+        android:id="@+id/btnBackHome"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:text="Back to Home"
+        android:textAllCaps="false"
+        android:backgroundTint="@color/primary"
+        android:textColor="@android:color/white"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/resultCard"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</LinearLayout>
