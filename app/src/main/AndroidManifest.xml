@@ -13,6 +13,7 @@
 
     <application
         android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
 
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -60,6 +61,8 @@
         <activity android:name=".activity.NotificationActivity" />
         <activity android:name=".activity.ForgotActivity" />
         <activity android:name=".activity.SearchRegisActivity" />
+        <activity android:name=".activity.StudentPreparationActivity" />
+        <activity android:name=".activity.StudentPreparationDetailActivity" />
         <activity
             android:name=".activity.CheckinResultActivity"
             android:exported="false" />

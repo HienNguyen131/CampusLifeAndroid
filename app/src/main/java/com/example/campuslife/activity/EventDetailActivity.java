@@ -57,10 +57,8 @@ import static java.security.AccessController.getContext;
 
 public class EventDetailActivity extends AppCompatActivity {
 
-
     private ImageView imgBanner;
     private ImageView btnBack;
-
 
     private TextView tvTitle;
     private TextView tvAddress;
@@ -71,20 +69,20 @@ public class EventDetailActivity extends AppCompatActivity {
 
     private TextView tvDesc;
     private TextView tvBenefits;
-    private TextView tvRequirements,txtAll;
+    private TextView tvRequirements, txtAll;
     private TextView tvContactInfo, tvLink;
     private TextView tvJoined, tvDay;
 
-    private MaterialButton btnJoin,btnCate;
+    private MaterialButton btnJoin, btnCate;
 
     private RecyclerView rvPhotos;
     private long activityId = -1;
-    private String activityType,ScoreType;
+    private String activityType, ScoreType;
     private PhotoAdapter adapter;
 
     private boolean hasMiniGame = false;
 
-    private final DateTimeFormatter inDate  = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
+    private final DateTimeFormatter inDate = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US);
     private final DateTimeFormatter outDate = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault());
 
     @SuppressLint("MissingInflatedId")
@@ -93,31 +91,29 @@ public class EventDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_detail);
 
-        imgBanner       = findViewById(R.id.imgBanner);
-        btnBack         = findViewById(R.id.btnBack);
+        imgBanner = findViewById(R.id.imgBanner);
+        btnBack = findViewById(R.id.btnBack);
 
-        tvTitle         = findViewById(R.id.tvTitle);
-        tvAddress       = findViewById(R.id.tvLocation);
-        tvDate          = findViewById(R.id.tvDate);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvAddress = findViewById(R.id.tvLocation);
+        tvDate = findViewById(R.id.tvDate);
         btnCate = findViewById(R.id.btnCate);
         tvOrganizerName = findViewById(R.id.tvOrganiser);
 
-        tvDesc          = findViewById(R.id.tvDesc);
-        tvBenefits      = findViewById(R.id.tvBenefits);
-        tvRequirements  = findViewById(R.id.tvRequirements);
-        tvContactInfo   = findViewById(R.id.tvContactInfo);
+        tvDesc = findViewById(R.id.tvDesc);
+        tvBenefits = findViewById(R.id.tvBenefits);
+        tvRequirements = findViewById(R.id.tvRequirements);
+        tvContactInfo = findViewById(R.id.tvContactInfo);
         tvOrganizerRole = findViewById(R.id.tvOrganiserTilte);
 
-        btnJoin          = findViewById(R.id.btnJoin);
-        tvLink          = findViewById(R.id.tvLink);
+        btnJoin = findViewById(R.id.btnJoin);
+        tvLink = findViewById(R.id.tvLink);
 
         tvDay = findViewById(R.id.tvDay);
 
         long id = getIntent().getLongExtra("activity_id", -1);
 
-
         btnBack.setOnClickListener(v -> finish());
-
 
         if (id > 0) {
             activityId = id;
@@ -127,7 +123,6 @@ public class EventDetailActivity extends AppCompatActivity {
             Toast.makeText(this, "Thiếu activity_id", Toast.LENGTH_SHORT).show();
             finish();
         }
-
 
         btnJoin.setOnClickListener(v -> tryJoinNow());
     }
@@ -161,6 +156,7 @@ public class EventDetailActivity extends AppCompatActivity {
             }
         });
     }
+
     private void showOrganizers(List<Department> list) {
         if (list == null || list.isEmpty()) {
             tvOrganizerName.setVisibility(View.GONE);
@@ -175,8 +171,6 @@ public class EventDetailActivity extends AppCompatActivity {
         tvOrganizerName.setVisibility(View.VISIBLE);
     }
 
-
-
     private void bind(Activity a) {
 
         if (a.getId() != null && a.getId() > 0) {
@@ -184,21 +178,18 @@ public class EventDetailActivity extends AppCompatActivity {
         }
         activityType = a.getType();
         Log.d("EVENT_TYPE", "activityType = " + activityType);
-        ScoreType= a.getScoreType();
-        if("REN_LUYEN".equalsIgnoreCase(activityType)){
-            setTextOrHide(btnCate,"Training Point");
-        }else if("CONG_TAC_XA_HOI".equalsIgnoreCase(activityType)) {
+        ScoreType = a.getScoreType();
+        if ("REN_LUYEN".equalsIgnoreCase(activityType)) {
+            setTextOrHide(btnCate, "Training Point");
+        } else if ("CONG_TAC_XA_HOI".equalsIgnoreCase(activityType)) {
             setTextOrHide(btnCate, "Business Point");
-        }else{
+        } else {
             setTextOrHide(btnCate, "Social Point");
         }
-
 
         setTextOrHide(tvTitle, a.getName());
         setTextOrHide(tvAddress, a.getLocation());
         tvDate.setText(fmtDateOnly(a.getStartDate()));
-
-
 
         if (a.organizerIds != null && !a.organizerIds.isEmpty()) {
 
@@ -215,14 +206,11 @@ public class EventDetailActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onFailure(Call<Department> call, Throwable t) {}
+                    public void onFailure(Call<Department> call, Throwable t) {
+                    }
                 });
             }
         }
-
-
-
-
 
         setTextOrHide(tvDesc, a.getDescription());
         setTextOrHide(tvBenefits, a.getBenefits());
@@ -232,8 +220,8 @@ public class EventDetailActivity extends AppCompatActivity {
         long joined = safeLong(a.getParticipantCount());
         int total = safeInt(a.getTicketQuantity());
         LocalDate now = LocalDate.now();
-        LocalDate regStart = LocalDate.parse(a.getRegistrationStartDate().substring(0,10));
-        LocalDate regEnd   = LocalDate.parse(a.getRegistrationDeadline().substring(0,10));
+        LocalDate regStart = LocalDate.parse(a.getRegistrationStartDate().substring(0, 10));
+        LocalDate regEnd = LocalDate.parse(a.getRegistrationDeadline().substring(0, 10));
 
         if (now.isBefore(regStart)) {
             tvDay.setText("Not opened");
@@ -263,13 +251,11 @@ public class EventDetailActivity extends AppCompatActivity {
         btnJoin.setText("Join in");
         btnJoin.setBackgroundTintList(ColorStateList.valueOf(getColor(R.color.primary)));
 
-
-
         setTextOrHide(tvLink, a.getShareLink());
 
         String url = a.getBannerUrl();
-//        url = url.replace("http://localhost:8080", "http://196.169.1.192:8080");
-        url = url.replace("http://localhost:8080", "http://172.21.13.137:8080");
+        // url = url.replace("http://localhost:8080", "http://196.169.1.192:8080");
+        url = url.replace("http://localhost:8080", "http://10.0.2.2:8080");
 
         if (url != null && !url.startsWith("http")) {
             url = BuildConfig.BASE_URL + (url.startsWith("/") ? url.substring(1) : url);
@@ -279,7 +265,6 @@ public class EventDetailActivity extends AppCompatActivity {
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder)
                 .into(imgBanner);
-
 
     }
 
@@ -291,7 +276,6 @@ public class EventDetailActivity extends AppCompatActivity {
             return isoDateTime;
         }
     }
-
 
     private void tryJoinNow() {
         if (activityId <= 0) {
@@ -315,8 +299,7 @@ public class EventDetailActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(
                             Call<ApiResponse<ActivityRegistrationResponse>> call,
-                            Response<ApiResponse<ActivityRegistrationResponse>> response
-                    ) {
+                            Response<ApiResponse<ActivityRegistrationResponse>> response) {
                         setJoining(false);
                         if (response.code() == 401 || response.code() == 403) {
                             Toast.makeText(EventDetailActivity.this,
@@ -327,7 +310,6 @@ public class EventDetailActivity extends AppCompatActivity {
                         }
 
                         boolean isMiniGame = "MINIGAME".equalsIgnoreCase(activityType);
-
 
                         if (response.isSuccessful() && response.body() != null) {
                             ApiResponse<ActivityRegistrationResponse> api = response.body();
@@ -370,15 +352,13 @@ public class EventDetailActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(
                             Call<ApiResponse<ActivityRegistrationResponse>> call,
-                            Throwable t
-                    ) {
+                            Throwable t) {
                         setJoining(false);
 
                         Toast.makeText(EventDetailActivity.this,
                                 "Lỗi mạng/Server: " +
                                         (t.getMessage() != null ? t.getMessage() : ""),
                                 Toast.LENGTH_LONG).show();
-
 
                         if ("MINIGAME".equalsIgnoreCase(activityType)) {
                             Intent i = new Intent(EventDetailActivity.this, MiniGameActivity.class);
@@ -388,7 +368,6 @@ public class EventDetailActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
     private boolean hasJwtToken() {
         String access = TokenStore.getToken(this);
@@ -405,9 +384,6 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-
-
-
     private void setJoining(boolean joining) {
         btnJoin.setEnabled(!joining);
         btnJoin.setAlpha(joining ? 0.7f : 1f);
@@ -422,12 +398,17 @@ public class EventDetailActivity extends AppCompatActivity {
         btnJoin.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#E6FFE6")));
     }
 
-    private String n(String s) { return s == null ? "" : s; }
+    private String n(String s) {
+        return s == null ? "" : s;
+    }
 
     private String buildDateRange(String start, String end) {
-        if (isEmpty(start) && isEmpty(end)) return "";
-        if (isEmpty(end))   return fmtDate(start);
-        if (isEmpty(start)) return fmtDate(end);
+        if (isEmpty(start) && isEmpty(end))
+            return "";
+        if (isEmpty(end))
+            return fmtDate(start);
+        if (isEmpty(start))
+            return fmtDate(end);
         return fmtDate(start) + " – " + fmtDate(end);
     }
 
@@ -439,8 +420,9 @@ public class EventDetailActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isEmpty(String s) { return s == null || s.trim().isEmpty(); }
-
+    private boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
+    }
 
     public static class JoinBody {
         private final long activityId;
@@ -451,9 +433,15 @@ public class EventDetailActivity extends AppCompatActivity {
             this.feedback = feedback;
         }
 
-        public long getActivityId() { return activityId; }
-        public String getFeedback() { return feedback; }
+        public long getActivityId() {
+            return activityId;
+        }
+
+        public String getFeedback() {
+            return feedback;
+        }
     }
+
     private long safeLong(Long value) {
         return value == null ? 0L : value;
     }

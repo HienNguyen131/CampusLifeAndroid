@@ -39,34 +39,37 @@ public class ProfileFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        btnLogout=view.findViewById(R.id.btnLogoout);
-        btnsupport=view.findViewById(R.id.btnSupport);
-        btnProfileDetail=view.findViewById(R.id.btnManageProfile);
-        imgAvatar =view.findViewById(R.id.imgAvatar);
-        tvName=view.findViewById(R.id.tvName);
-        btnProfileDetail.setOnClickListener(v->{
+        btnLogout = view.findViewById(R.id.btnLogoout);
+        btnsupport = view.findViewById(R.id.btnSupport);
+        btnProfileDetail = view.findViewById(R.id.btnManageProfile);
+        imgAvatar = view.findViewById(R.id.imgAvatar);
+        tvName = view.findViewById(R.id.tvName);
+        btnProfileDetail.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), ProfileDetailActivity.class);
             startActivity(intent);
         });
-        btnsupport.setOnClickListener(v->{
+        btnsupport.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), ForgotActivity.class);
             startActivity(intent);
         });
         btnLogout.setOnClickListener(v -> handleLogout());
         imgProfile();
     }
+
     private void imgProfile() {
 
         Context ctx = getContext();
-        if (ctx == null) return;
+        if (ctx == null)
+            return;
 
         ProfileAPI api = ApiClient.profile(ctx);
 
@@ -74,7 +77,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<Student>> call, Response<ApiResponse<Student>> resp) {
 
-                if (!isAdded() || getContext() == null) return;
+                if (!isAdded() || getContext() == null)
+                    return;
 
                 if (resp.isSuccessful() && resp.body() != null && resp.body().isStatus()) {
 
@@ -87,9 +91,9 @@ public class ProfileFragment extends Fragment {
                     String url = student.getAvatarUrl() == null
                             ? ""
                             : student.getAvatarUrl()
-                            .replace("http://localhost:8080", "http://172.21.13.137:8080");
+                                    .replace("http://localhost:8080", "http://10.0.2.2:8080");
 
-//                    url = url.replace("http://localhost:8080", "http://10.0.2.2:8080");
+                    // url = url.replace("http://localhost:8080", "http://10.0.2.2:8080");
 
                     if (url != null && url.startsWith("http")) {
 
@@ -114,7 +118,8 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onFailure(Call<ApiResponse<Student>> call, Throwable throwable) {
 
-                if (!isAdded() || getContext() == null) return;
+                if (!isAdded() || getContext() == null)
+                    return;
 
                 Toast.makeText(getContext(),
                         "Lỗi: " + throwable.getMessage(),
@@ -122,6 +127,7 @@ public class ProfileFragment extends Fragment {
             }
         });
     }
+
     private void handleLogout() {
         TokenStore.clearAll(requireContext());
         ApiClient.reset();

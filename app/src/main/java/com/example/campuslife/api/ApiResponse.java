@@ -10,8 +10,8 @@ public class ApiResponse<T> {
     @SerializedName("message")
     private String message;
 
-    @SerializedName(value = "body", alternate = {"data"})
-    private T data;
+    @SerializedName(value = "body", alternate = { "data" })
+    private T body;
 
     public boolean isStatus() {
         return status;
@@ -22,6 +22,10 @@ public class ApiResponse<T> {
     }
 
     public T getData() {
-        return data;
+        return body;
+    }
+
+    public T getBody() {
+        return body;
     }
 }
