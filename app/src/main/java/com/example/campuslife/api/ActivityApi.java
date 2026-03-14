@@ -2,6 +2,7 @@ package com.example.campuslife.api;
 
 import com.example.campuslife.entity.Activity;
 import java.util.List;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.http.GET;
@@ -14,6 +15,9 @@ public interface ActivityApi {
 
     @GET("/api/activities")
     Call<List<Activity>>queryByType(@Query("type") String type);
+
+    @GET("/api/activities")
+    Call<ResponseBody> listAllRaw(@Query("type") String type);
 
     @GET("api/activities/month")
     Call<List<Activity>> thisMonth();

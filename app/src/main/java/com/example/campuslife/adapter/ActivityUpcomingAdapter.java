@@ -27,7 +27,8 @@ public class ActivityUpcomingAdapter extends RecyclerView.Adapter<ActivityUpcomi
 
     public void submit(List<Activity> data) {
         items.clear();
-        if (data != null) items.addAll(data);
+        if (data != null)
+            items.addAll(data);
         notifyDataSetChanged();
     }
 
@@ -45,7 +46,8 @@ public class ActivityUpcomingAdapter extends RecyclerView.Adapter<ActivityUpcomi
         }
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_event_upcoming, parent, false);
@@ -61,10 +63,9 @@ public class ActivityUpcomingAdapter extends RecyclerView.Adapter<ActivityUpcomi
         h.textEventTime.setText(fmtDateOnly(a.getStartDate()) + " - " + fmtDateOnly(a.getEndDate()));
         h.textEventLocation.setText(a.getLocation() != null ? a.getLocation() : "");
 
-
         String img = a.getBannerUrl();
-//        img = img.replace("http://localhost:8080", "http://196.169.1.192:8080");
-        img = img.replace("http://localhost:8080", "http://172.21.13.137:8080");
+        // img = img.replace("http://localhost:8080", "http://196.169.1.192:8080");
+        img = img.replace("http://localhost:8080", "http://10.0.2.2:8080");
 
         String full = null;
         if (img != null && !img.isEmpty()) {
@@ -72,9 +73,12 @@ public class ActivityUpcomingAdapter extends RecyclerView.Adapter<ActivityUpcomi
                 full = img;
             } else {
                 String base = BuildConfig.BASE_URL;
-                if (!base.endsWith("/")) base += "/";
-                if (img.startsWith("/")) img = img.substring(1);
-                if (!img.startsWith("uploads/")) img = "uploads/" + img;
+                if (!base.endsWith("/"))
+                    base += "/";
+                if (img.startsWith("/"))
+                    img = img.substring(1);
+                if (!img.startsWith("uploads/"))
+                    img = "uploads/" + img;
                 full = base + img;
             }
         }
@@ -92,6 +96,7 @@ public class ActivityUpcomingAdapter extends RecyclerView.Adapter<ActivityUpcomi
             v.getContext().startActivity(i);
         });
     }
+
     private String fmtDateOnly(String isoDateTime) {
         try {
             LocalDateTime dt = LocalDateTime.parse(isoDateTime);
@@ -102,5 +107,7 @@ public class ActivityUpcomingAdapter extends RecyclerView.Adapter<ActivityUpcomi
     }
 
     @Override
-    public int getItemCount() { return items.size(); }
+    public int getItemCount() {
+        return items.size();
+    }
 }

@@ -39,16 +39,16 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
 
     private final List<Activity> items = new ArrayList<>();
 
-
     public void updateData(List<Activity> data) {
         items.clear();
-        if (data != null) items.addAll(data);
+        if (data != null)
+            items.addAll(data);
         notifyDataSetChanged();
     }
 
-
     static class VH extends RecyclerView.ViewHolder {
         ItemEventListBinding b;
+
         VH(ItemEventListBinding b) {
             super(b.getRoot());
             this.b = b;
@@ -76,8 +76,8 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
 
         // Load banner
         String img = a.getBannerUrl();
-//        img = img.replace("http://localhost:8080", "http://196.169.1.192:8080");
-        img = img.replace("http://localhost:8080", "http://172.21.13.137:8080");
+        // img = img.replace("http://localhost:8080", "http://196.169.1.192:8080");
+        img = img.replace("http://localhost:8080", "http://10.0.2.2:8080");
 
         String full = null;
         if (img != null && !img.isEmpty()) {
@@ -85,9 +85,12 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
                 full = img;
             } else {
                 String base = BuildConfig.BASE_URL;
-                if (!base.endsWith("/")) base += "/";
-                if (img.startsWith("/")) img = img.substring(1);
-                if (!img.startsWith("uploads/")) img = "uploads/" + img;
+                if (!base.endsWith("/"))
+                    base += "/";
+                if (img.startsWith("/"))
+                    img = img.substring(1);
+                if (!img.startsWith("uploads/"))
+                    img = "uploads/" + img;
                 full = base + img;
             }
         }
@@ -98,13 +101,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
                 .error(R.drawable.ic_launcher_background)
                 .into(h.b.imgBanner);
 
-
-
-
         h.b.btnDangKy.setOnClickListener(v -> tryJoinNow(context, a));
-
-
-
 
         h.itemView.setOnClickListener(v -> {
 
@@ -141,8 +138,7 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
                     @Override
                     public void onResponse(
                             Call<ApiResponse<ActivityRegistrationResponse>> call,
-                            Response<ApiResponse<ActivityRegistrationResponse>> response
-                    ) {
+                            Response<ApiResponse<ActivityRegistrationResponse>> response) {
                         if (response.code() == 401 || response.code() == 403) {
                             Toast.makeText(context, "Phiên đăng nhập hết hạn. Hãy đăng nhập lại.",
                                     Toast.LENGTH_LONG).show();
@@ -165,10 +161,8 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
 
                         } else {
 
-
                             String msg = "Already registered for this activity";
                             Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-
 
                             if ("MINIGAME".equalsIgnoreCase(activityType)) {
                                 Intent i = new Intent(context, MiniGameActivity.class);
@@ -186,7 +180,6 @@ public class ActivityListAdapter extends RecyclerView.Adapter<ActivityListAdapte
                     }
                 });
     }
-
 
     @Override
     public int getItemCount() {

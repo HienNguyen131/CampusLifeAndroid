@@ -27,7 +27,8 @@ public class ActivityForYouAdapter extends RecyclerView.Adapter<ActivityForYouAd
 
     public void submit(List<Activity> data) {
         items.clear();
-        if (data != null) items.addAll(data);
+        if (data != null)
+            items.addAll(data);
         notifyDataSetChanged();
     }
 
@@ -45,13 +46,13 @@ public class ActivityForYouAdapter extends RecyclerView.Adapter<ActivityForYouAd
         }
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public ActivityForYouAdapter.VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_event_foryou, parent, false);
         return new ActivityForYouAdapter.VH(v);
     }
-
 
     @Override
     public void onBindViewHolder(@NonNull ActivityForYouAdapter.VH h, int position) {
@@ -62,10 +63,9 @@ public class ActivityForYouAdapter extends RecyclerView.Adapter<ActivityForYouAd
         h.textEventTime.setText(fmtDateOnly(a.getStartDate()) + " - " + fmtDateOnly(a.getEndDate()));
         h.textEventLocation.setText(a.getLocation() != null ? a.getLocation() : "");
 
-
         String img = a.getBannerUrl();
-//       img = img.replace("http://localhost:8080", "http://196.169.1.192:8080");
-        img = img.replace("http://localhost:8080", "http://172.21.13.137:8080");
+        // img = img.replace("http://localhost:8080", "http://196.169.1.192:8080");
+        img = img.replace("http://localhost:8080", "http://10.0.2.2:8080");
 
         String full = null;
         Log.e("BASE_URL_CHECK", "BuildConfig.BASE_URL = " + BuildConfig.BASE_URL);
@@ -75,9 +75,12 @@ public class ActivityForYouAdapter extends RecyclerView.Adapter<ActivityForYouAd
                 full = img;
             } else {
                 String base = BuildConfig.BASE_URL;
-                if (!base.endsWith("/")) base += "/";
-                if (img.startsWith("/")) img = img.substring(1);
-                if (!img.startsWith("uploads/")) img = "uploads/" + img;
+                if (!base.endsWith("/"))
+                    base += "/";
+                if (img.startsWith("/"))
+                    img = img.substring(1);
+                if (!img.startsWith("uploads/"))
+                    img = "uploads/" + img;
 
                 full = base + img;
             }
@@ -101,6 +104,7 @@ public class ActivityForYouAdapter extends RecyclerView.Adapter<ActivityForYouAd
     public int getItemCount() {
         return Math.min(items.size(), 5);
     }
+
     private String fmtDateOnly(String isoDateTime) {
         try {
             LocalDateTime dt = LocalDateTime.parse(isoDateTime);

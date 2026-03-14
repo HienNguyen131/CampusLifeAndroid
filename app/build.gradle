@@ -34,9 +34,24 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-//      buildConfigField "String", "BASE_URL", "\"https://campuslife-v2iu.onrender.com/\""
-        buildConfigField "String", "BASE_URL", "\"http://172.21.13.137:8080/\""
+
+        // ========== BACKEND URL CONFIGURATION ==========
+        // Choose ONE configuration below based on your setup:
+
+        // OPTION 1: For Android Emulator connecting to local backend (RECOMMENDED FOR DEVELOPMENT)
+        // Use this special IP that emulator uses to access host machine's localhost
+        buildConfigField "String", "BASE_URL", "\"http://10.0.2.2:8080/\""
+
+        // OPTION 2: For Physical Device on same WiFi network as your computer
+        // Replace with your computer's actual IP address (run ipconfig to find it)
+//        buildConfigField "String", "BASE_URL", "\"http://172.21.13.137:8080/\""
 //        buildConfigField "String", "BASE_URL", "\"http://196.169.1.192:8080/\""
+
+        // OPTION 3: For Production (Cloud Server)
+//        buildConfigField "String", "BASE_URL", "\"https://campuslife-v2iu.onrender.com/\""
+
+        // NOTE: If connection fails, see NETWORK_SETUP.md for detailed troubleshooting guide
+        // ===============================================
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-
 import com.bumptech.glide.Glide;
 import com.example.campuslife.R;
 
@@ -29,6 +28,7 @@ import com.example.campuslife.activity.NotificationActivity;
 
 import com.example.campuslife.activity.ProfileDetailActivity;
 import com.example.campuslife.activity.SearchActivity;
+import com.example.campuslife.activity.StudentPreparationActivity;
 import com.example.campuslife.adapter.ActivityForYouAdapter;
 import com.example.campuslife.adapter.ActivityUpcomingAdapter;
 import com.example.campuslife.adapter.SeriesAdapter;
@@ -50,19 +50,19 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class HomeFragment extends Fragment {
-    private RecyclerView rvUpcoming, rvForYou,rvSeries;
+    private RecyclerView rvUpcoming, rvForYou, rvSeries;
     private ActivityUpcomingAdapter upcomingAdapter;
     private ActivityForYouAdapter forYouAdapter;
     private SeriesAdapter seriesAdapter;
     private ProgressBar pbLoading, pbForYou, pbSeries;
-    private TextView tvEmpty, tvEmptyForYou, tvEmptySeries,txtUpcoming,txtForYou;
-    private ImageView ivProfile,ivSearch,ivNoti;
+    private TextView tvEmpty, tvEmptyForYou, tvEmptySeries, txtUpcoming, txtForYou;
+    private ImageView ivProfile, ivSearch, ivNoti;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
@@ -75,46 +75,39 @@ public class HomeFragment extends Fragment {
 
         txtUser.setText(username != null ? username : "User");
 
-
         rvUpcoming = view.findViewById(R.id.rvUpcoming);
         pbLoading = view.findViewById(R.id.pbLoading);
         tvEmpty = view.findViewById(R.id.tvEmpty);
         ivProfile = view.findViewById(R.id.ivProfile);
-        ivSearch  = view.findViewById(R.id.ivSearch);
+        ivSearch = view.findViewById(R.id.ivSearch);
         ivNoti = view.findViewById(R.id.ivNoti);
         txtUpcoming = view.findViewById(R.id.txtUpcoming);
-                txtForYou= view.findViewById(R.id.txtForYou);
-        ivSearch.setOnClickListener(t->{
-                    Intent intent = new Intent(requireContext(), SearchActivity.class);
-                    startActivity(intent);
-                }
-        );
-        ivNoti.setOnClickListener(t->{
-                    Intent intent = new Intent(requireContext(), NotificationActivity.class);
-                    startActivity(intent);
-                }
-        );
+        txtForYou = view.findViewById(R.id.txtForYou);
+        ivSearch.setOnClickListener(t -> {
+            Intent intent = new Intent(requireContext(), SearchActivity.class);
+            startActivity(intent);
+        });
+        ivNoti.setOnClickListener(t -> {
+            Intent intent = new Intent(requireContext(), NotificationActivity.class);
+            startActivity(intent);
+        });
         imgProfile();
-        ivProfile.setOnClickListener(t->{
+        ivProfile.setOnClickListener(t -> {
             Intent intent = new Intent(requireContext(), ProfileDetailActivity.class);
-                    startActivity(intent);
-                }
-                );
+            startActivity(intent);
+        });
         upcomingAdapter = new ActivityUpcomingAdapter();
         rvUpcoming.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
-        );
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         rvUpcoming.setAdapter(upcomingAdapter);
         loadUpcoming();
-
 
         rvForYou = view.findViewById(R.id.rvForYou);
         pbForYou = view.findViewById(R.id.pbForYou);
         tvEmptyForYou = view.findViewById(R.id.tvEmptyForYou);
         forYouAdapter = new ActivityForYouAdapter();
         rvForYou.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
-        );
+                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvForYou.setAdapter(forYouAdapter);
         loadForYou();
 
@@ -123,8 +116,7 @@ public class HomeFragment extends Fragment {
         tvEmptySeries = view.findViewById(R.id.tvEmptySeries);
         seriesAdapter = new SeriesAdapter();
         rvSeries.setLayoutManager(
-                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false)
-        );
+                new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         rvSeries.setAdapter(seriesAdapter);
         loadSeries();
 
@@ -146,18 +138,23 @@ public class HomeFragment extends Fragment {
             startActivity(i);
         });
 
+        view.findViewById(R.id.cardPreparation).setOnClickListener(v -> {
+            Intent i = new Intent(requireContext(), StudentPreparationActivity.class);
+            startActivity(i);
+        });
+
         String currentMonth = LocalDate.now()
                 .getMonth()
                 .getDisplayName(TextStyle.FULL, Locale.ENGLISH);
 
-
         txtUpcoming.setText("Upcoming activity (" + currentMonth + ")");
-
 
         // Chip click
         view.findViewById(R.id.chipTranningPoint).setOnClickListener(v -> openCategory("REN_LUYEN", "Training Point"));
-        view.findViewById(R.id.chipBussiness).setOnClickListener(v -> openCategory("CONG_TAC_XA_HOI", "Business Score"));
-        view.findViewById(R.id.chipSocial).setOnClickListener(v -> openCategory("CHUYEN_DE_DOANH_NGHIEP", "Social Activity"));
+        view.findViewById(R.id.chipBussiness)
+                .setOnClickListener(v -> openCategory("CONG_TAC_XA_HOI", "Business Score"));
+        view.findViewById(R.id.chipSocial)
+                .setOnClickListener(v -> openCategory("CHUYEN_DE_DOANH_NGHIEP", "Social Activity"));
     }
 
     private void loadSeries() {
@@ -167,7 +164,7 @@ public class HomeFragment extends Fragment {
 
                     @Override
                     public void onResponse(Call<ApiResponse<List<ActivitySeries>>> call,
-                                           Response<ApiResponse<List<ActivitySeries>>> r) {
+                            Response<ApiResponse<List<ActivitySeries>>> r) {
 
                         showLoading(false);
 
@@ -204,10 +201,12 @@ public class HomeFragment extends Fragment {
         i.putExtra("EXTRA_TITLE", title);
         startActivity(i);
     }
+
     private void imgProfile() {
 
         Context ctx = getContext();
-        if (ctx == null) return;
+        if (ctx == null)
+            return;
 
         ProfileAPI api = ApiClient.profile(ctx);
 
@@ -215,7 +214,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<Student>> call, Response<ApiResponse<Student>> resp) {
 
-                if (!isAdded() || getContext() == null) return;
+                if (!isAdded() || getContext() == null)
+                    return;
 
                 if (resp.isSuccessful() && resp.body() != null && resp.body().isStatus()) {
 
@@ -223,9 +223,9 @@ public class HomeFragment extends Fragment {
                     String url = student.getAvatarUrl() == null
                             ? ""
                             : student.getAvatarUrl()
-                            .replace("http://localhost:8080", "http://172.21.13.137:8080");
+                                    .replace("http://localhost:8080", "http://10.0.2.2:8080");
 
-//                    url = url.replace("http://localhost:8080", "http://10.0.2.2:8080");
+                    // url = url.replace("http://localhost:8080", "http://10.0.2.2:8080");
 
                     if (url != null && url.startsWith("http")) {
 
@@ -249,7 +249,8 @@ public class HomeFragment extends Fragment {
             @Override
             public void onFailure(Call<ApiResponse<Student>> call, Throwable throwable) {
 
-                if (!isAdded() || getContext() == null) return;
+                if (!isAdded() || getContext() == null)
+                    return;
 
                 Toast.makeText(getContext(),
                         "Lỗi: " + throwable.getMessage(),
@@ -257,9 +258,6 @@ public class HomeFragment extends Fragment {
             }
         });
     }
-
-
-
 
     private void loadUpcoming() {
         android.util.Log.d("HOME_DEBUG", "→ loadUpcoming() called");
@@ -325,6 +323,7 @@ public class HomeFragment extends Fragment {
                             toast("HTTP " + r.code());
                         }
                     }
+
                     @Override
                     public void onFailure(Call<List<Activity>> c, Throwable t) {
                         showLoadingForYou(false);
@@ -334,13 +333,17 @@ public class HomeFragment extends Fragment {
     }
 
     private void showLoading(boolean b) {
-        if (pbLoading != null) pbLoading.setVisibility(b ? View.VISIBLE : View.GONE);
-        if (rvUpcoming != null) rvUpcoming.setAlpha(b ? 0.4f : 1f);
+        if (pbLoading != null)
+            pbLoading.setVisibility(b ? View.VISIBLE : View.GONE);
+        if (rvUpcoming != null)
+            rvUpcoming.setAlpha(b ? 0.4f : 1f);
     }
 
     private void showLoadingForYou(boolean b) {
-        if (pbForYou != null) pbForYou.setVisibility(b ? View.VISIBLE : View.GONE);
-        if (rvForYou != null) rvForYou.setAlpha(b ? 0.4f : 1f);
+        if (pbForYou != null)
+            pbForYou.setVisibility(b ? View.VISIBLE : View.GONE);
+        if (rvForYou != null)
+            rvForYou.setAlpha(b ? 0.4f : 1f);
     }
 
     private void toast(String s) {

@@ -17,7 +17,8 @@ public final class ApiClient {
     private static volatile Retrofit retrofitApi;
     private static volatile Retrofit retrofitNoAuth;
 
-    private ApiClient() {}
+    private ApiClient() {
+    }
 
     public static AuthApi authNoAuth(Context ctx) {
         if (retrofitNoAuth == null) {
@@ -47,13 +48,11 @@ public final class ApiClient {
         return retrofitNoAuth.create(AuthApi.class);
     }
 
-
     private static Retrofit getRetrofitApi(Context ctx) {
         if (retrofitApi == null) {
             synchronized (ApiClient.class) {
                 if (retrofitApi == null) {
                     final Context appCtx = ctx.getApplicationContext();
-
 
                     HttpLoggingInterceptor log = new HttpLoggingInterceptor();
                     log.setLevel(BuildConfig.DEBUG
@@ -69,7 +68,6 @@ public final class ApiClient {
                             .readTimeout(20, TimeUnit.SECONDS)
                             .writeTimeout(20, TimeUnit.SECONDS)
                             .build();
-
 
                     retrofitApi = new Retrofit.Builder()
                             .baseUrl(ensureSlash(BuildConfig.BASE_URL))
@@ -98,51 +96,67 @@ public final class ApiClient {
     public static RegistrationApi activityRegistrations(Context ctx) {
         return create(ctx, RegistrationApi.class);
     }
+
     public static ReportAPI activityReports(Context ctx) {
         return create(ctx, ReportAPI.class);
     }
+
     public static FeedbackApi activityFeedback(Context ctx) {
         return create(ctx, FeedbackApi.class);
     }
+
     public static MiniGameApi miniGames(Context ctx) {
-        return create(ctx,MiniGameApi.class);
+        return create(ctx, MiniGameApi.class);
     }
 
     public static ProfileAPI profile(Context ctx) {
-        return create(ctx,ProfileAPI.class);
+        return create(ctx, ProfileAPI.class);
+    }
+
+    public static PreparationApi preparation(Context ctx) {
+        return create(ctx, PreparationApi.class);
     }
 
     public static ActivityReminderAPI reminder(Context ctx) {
-        return create(ctx,ActivityReminderAPI.class);
+        return create(ctx, ActivityReminderAPI.class);
     }
+
     public static SemesterApi semester(Context ctx) {
-        return create(ctx,SemesterApi.class);
+        return create(ctx, SemesterApi.class);
     }
+
     public static ScoreApi score(Context ctx) {
-        return create(ctx,ScoreApi.class);
+        return create(ctx, ScoreApi.class);
     }
+
     public static ParticipationApi participation(Context ctx) {
-        return create(ctx,ParticipationApi.class);
+        return create(ctx, ParticipationApi.class);
     }
+
     public static PhotoApi photo(Context ctx) {
-        return create(ctx,PhotoApi.class);
+        return create(ctx, PhotoApi.class);
     }
 
     public static SeriesApi series(Context ctx) {
-        return create(ctx,SeriesApi.class);
+        return create(ctx, SeriesApi.class);
     }
+
     public static NotificationsApi notifications(Context ctx) {
-        return create(ctx,NotificationsApi.class);
+        return create(ctx, NotificationsApi.class);
     }
+
     public static ForgotApi forgot(Context ctx) {
-        return create(ctx,ForgotApi.class);
+        return create(ctx, ForgotApi.class);
     }
+
     public static AddressApi address(Context ctx) {
-        return create(ctx,AddressApi.class);
+        return create(ctx, AddressApi.class);
     }
+
     public static DeviceTokenApi device(Context ctx) {
-        return create(ctx,DeviceTokenApi.class);
+        return create(ctx, DeviceTokenApi.class);
     }
+
     public static synchronized void reset() {
         retrofitApi = null;
         retrofitNoAuth = null;
