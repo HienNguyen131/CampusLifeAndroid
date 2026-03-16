@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ public class ForgotActivity extends AppCompatActivity {
     private TextInputEditText edtEmail;
     private TextView btnSignIn;
     private MaterialButton btnSendCode;
+    private ImageView btnBack;
     private ForgotApi forgotApi;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,10 +39,18 @@ public class ForgotActivity extends AppCompatActivity {
         edtEmail= findViewById(R.id.edtEmail);
         btnSignIn = findViewById(R.id.btnSignIn);
         btnSendCode= findViewById(R.id.btnSendCode);
+        btnBack = findViewById(R.id.btnBack);
+        
         btnSignIn.setOnClickListener(v -> {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
+            finish();
         });
+        
+        btnBack.setOnClickListener(v -> {
+            finish();
+        });
+        
         btnSendCode.setEnabled(false);
         forgotApi= ApiClient.forgot(this);
         edtEmail.addTextChangedListener(new TextWatcher() {
@@ -81,6 +91,7 @@ public class ForgotActivity extends AppCompatActivity {
                             Intent intent = new Intent(ForgotActivity.this, LoginActivity.class);
                             intent.putExtra("email", email);
                             startActivity(intent);
+                            finish();
 
                         } else {
                             Toast.makeText(ForgotActivity.this,
@@ -97,6 +108,5 @@ public class ForgotActivity extends AppCompatActivity {
                     }
                 });
     }
-
 
 }

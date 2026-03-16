@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:padding="24dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:background="#D1D5DB"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cập nhật trạng thái"
+        android:textSize="20sp"
+        android:textColor="#001C44"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardPending"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#E5E7EB"
+        android:clickable="true"
+        android:focusable="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Chờ chuẩn bị"
+                android:textColor="#F59E0B"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
+            <ImageView
+                android:id="@+id/ivCheckPending"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_check_circle"
+                app:tint="#F59E0B"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- IN_PROGRESS (Đang tiến hành) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardInProgress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#E5E7EB"
+        android:clickable="true"
+        android:focusable="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Đang làm"
+                android:textColor="#3B82F6"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
+            <ImageView
+                android:id="@+id/ivCheckInProgress"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_check_circle"
+                app:tint="#3B82F6"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardCompleted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="#E5E7EB"
+        android:clickable="true"
+        android:focusable="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Đã hoàn thành"
+                android:textColor="#10B981"
+                android:textStyle="bold"
+                android:textSize="16sp"/>
+            <ImageView
+                android:id="@+id/ivCheckCompleted"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_check_circle"
+                app:tint="#10B981"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConfirmStatus"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Xác nhận"
+        android:textColor="@color/white"
+        app:backgroundTint="#001C44"
+        app:cornerRadius="14dp"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

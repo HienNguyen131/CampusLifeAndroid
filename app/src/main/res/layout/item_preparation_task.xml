@@ -3,78 +3,90 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
-    app:cardBackgroundColor="@android:color/white"
+    android:layout_marginBottom="16dp"
+    app:cardBackgroundColor="@color/white"
     app:cardCornerRadius="16dp"
-    app:cardElevation="1dp">
+    app:cardElevation="0dp"
+    app:strokeColor="#F3F4F6"
+    app:strokeWidth="1dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="12dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Tiêu đề"
-                android:textColor="@android:color/black"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="32dp"
-                android:text="PENDING"
-                app:chipBackgroundColor="#11000000"
-                app:chipStrokeColor="@color/primary"
-                app:chipStrokeWidth="1dp"
-                app:closeIconVisible="false" />
-        </LinearLayout>
+        android:padding="16dp">
 
         <TextView
-            android:id="@+id/tvDesc"
-            android:layout_width="match_parent"
+            android:id="@+id/tvTaskTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:ellipsize="end"
-            android:maxLines="3"
-            android:text="Mô tả"
-            android:textColor="#66000000"
-            android:textSize="12sp" />
+            android:text="Venue Decoration Setup"
+            android:textColor="#111827"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/tvTaskStatus"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvMeta"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Deadline • Assignee"
-            android:textColor="#66000000"
-            android:textSize="12sp" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAction"
+            android:id="@+id/tvTaskStatus"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_gravity="end"
-            android:layout_marginTop="10dp"
-            android:text="Nhận việc"
-            android:textAllCaps="false"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/primary"
-            app:strokeWidth="1dp"
-            app:backgroundTint="@android:color/white"
-            android:textColor="@color/primary" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_squircle_orange"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="PENDING"
+            android:textColor="#A03A00"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- User Info -->
+        <ImageView
+            android:id="@+id/icUser"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/ic_profile_2"
+            app:tint="#6B7280"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvTaskTitle" />
+
+        <TextView
+            android:id="@+id/tvAssigneeName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Sarah Jenkins"
+            android:textColor="#4B5563"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/icUser"
+            app:layout_constraintStart_toEndOf="@id/icUser"
+            app:layout_constraintTop_toTopOf="@id/icUser" />
+
+        <!-- Deadline Info -->
+        <ImageView
+            android:id="@+id/icDate"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/ic_calendar"
+            app:tint="#6B7280"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/icUser" />
+
+        <TextView
+            android:id="@+id/tvDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Oct 24, 2026"
+            android:textColor="#4B5563"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/icDate"
+            app:layout_constraintStart_toEndOf="@id/icDate"
+            app:layout_constraintTop_toTopOf="@id/icDate" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </com.google.android.material.card.MaterialCardView>

@@ -32,6 +32,15 @@ public interface PreparationApi {
             @Path("taskId") long taskId,
             @Body UpdateTaskStatusRequest body);
 
+    @GET("/api/preparation/activities/{activityId}/organizers")
+    Call<ApiResponse<List<com.example.campuslife.entity.preparation.OrganizerDto>>> getOrganizers(
+            @Path("activityId") long activityId);
+
+    @PUT("/api/preparation/expenses/{expenseId}/approval")
+    Call<ApiResponse<ExpenseDto>> approveExpense(
+            @Path("expenseId") long expenseId,
+            @Body com.example.campuslife.entity.preparation.ApproveExpenseRequest body);
+
     @GET("/api/preparation/activities/{activityId}/expenses")
     Call<ApiResponse<List<ExpenseDto>>> listExpenses(
             @Path("activityId") long activityId,
@@ -47,4 +56,24 @@ public interface PreparationApi {
     Call<ApiResponse<ExpenseDto>> createExpense(
             @Path("activityId") long activityId,
             @Body CreateExpenseRequest body);
+
+    @POST("/api/preparation/activities/{activityId}/organizers/{studentId}")
+    Call<ApiResponse<Object>> addOrganizer(
+            @Path("activityId") long activityId,
+            @Path("studentId") long studentId);
+
+    @retrofit2.http.DELETE("/api/preparation/activities/{activityId}/organizers/{studentId}")
+    Call<ApiResponse<Object>> removeOrganizer(
+            @Path("activityId") long activityId,
+            @Path("studentId") long studentId);
+
+    @PUT("/api/preparation/activities/{activityId}/budget")
+    Call<ApiResponse<com.example.campuslife.entity.preparation.BudgetDto>> upsertBudget(
+            @Path("activityId") long activityId,
+            @Body com.example.campuslife.entity.preparation.UpsertBudgetRequest body);
+
+    @POST("/api/preparation/activities/{activityId}/tasks")
+    Call<ApiResponse<PreparationTaskDto>> assignTask(
+            @Path("activityId") long activityId,
+            @Body com.example.campuslife.entity.preparation.CreatePreparationTaskRequest body);
 }
