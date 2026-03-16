@@ -129,7 +129,14 @@ public class LoginActivity extends AppCompatActivity {
                             .addOnFailureListener(e -> {
                                 Log.e("FCM", " Cannot get FCM token", e);
                             });
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+
+                    String role = com.example.campuslife.utils.JwtUtils.getRoleFromToken(access);
+                    if ("ADMIN".equals(role) || "MANAGER".equals(role)) {
+                        startActivity(new Intent(LoginActivity.this, AdminMainActivity.class));
+                    } else {
+                        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    }
+                    
                     finish();
                     overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 

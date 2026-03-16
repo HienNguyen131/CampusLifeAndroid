@@ -33,7 +33,14 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             if (TokenStore.isLoggedIn(this)) {
-                startActivity(new Intent(this, MainActivity.class));
+                String access = TokenStore.getToken(this);
+                String role = com.example.campuslife.utils.JwtUtils.getRoleFromToken(access);
+
+                if ("ADMIN".equals(role) || "MANAGER".equals(role)) {
+                    startActivity(new Intent(this, AdminMainActivity.class));
+                } else {
+                    startActivity(new Intent(this, MainActivity.class));
+                }
             } else {
                 startActivity(new Intent(this, LoginActivity.class));
             }

@@ -9,12 +9,18 @@ import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import retrofit2.http.POST;
+import com.example.campuslife.entity.CreateActivityRequest;
+
 public interface ActivityApi {
+    @POST("/api/activities")
+    Call<ApiResponse<Activity>> createActivity(@retrofit2.http.Body CreateActivityRequest request);
+
     @GET("api/activities/score-type/{scoreType}")
     Call<List<Activity>> byType(@Path("scoreType") String scoreType);
 
     @GET("/api/activities")
-    Call<List<Activity>>queryByType(@Query("type") String type);
+    Call<ApiResponse<List<Activity>>> getAllActivities();
 
     @GET("/api/activities")
     Call<ResponseBody> listAllRaw(@Query("type") String type);

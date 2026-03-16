@@ -19,7 +19,7 @@ public class Student {
     public String departmentName;
 
     public String phone;
-    public String address;
+    public Object address;
     public String dob;
     public String avatarUrl;
     public String gender;
@@ -117,11 +117,11 @@ public class Student {
         this.phone = phone;
     }
 
-    public String getAddress() {
+    public Object getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(Object address) {
         this.address = address;
     }
 

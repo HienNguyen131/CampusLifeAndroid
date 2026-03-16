@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_top_rounded_white"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Giao Phân Công Mới"
+        android:textColor="#111827"
+        android:textSize="26sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Hệ thống quản trị CampusLife Admin"
+        android:textColor="#6B7280"
+        android:textSize="14sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="TIÊU ĐỀ CÔNG VIỆC"
+        android:textColor="#5C4033"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <EditText
+        android:id="@+id/etTaskTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_info_box"
+        android:hint="Nhập tên nhiệm vụ..."
+        android:textColorHint="#9CA3AF"
+        android:padding="16dp"
+        android:textSize="14sp"
+        android:textColor="#111827" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="NGƯỜI THỰC HIỆN"
+        android:textColor="#5C4033"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <EditText
+        android:id="@+id/etTaskAssigneeId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_info_box"
+        android:hint="Chọn người thực hiện..."
+        android:inputType="none"
+        android:textColorHint="#9CA3AF"
+        android:padding="16dp"
+        android:textSize="14sp"
+        android:textColor="#111827" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="HẠN CHÓT"
+        android:textColor="#5C4033"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_info_box"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingEnd="16dp">
+
+        <EditText
+            android:id="@+id/etTaskDeadline"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:hint="DD/MM/YYYY"
+            android:textColorHint="#9CA3AF"
+            android:padding="16dp"
+            android:textSize="14sp"
+            android:textColor="#111827" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_calendar"
+            app:tint="#A03A00" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="CHI TIẾT YÊU CẦU"
+        android:textColor="#5C4033"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.1" />
+
+    <EditText
+        android:id="@+id/etTaskDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_info_box"
+        android:hint="Mô tả cụ thể các hạng mục cần hoàn thành..."
+        android:textColorHint="#9CA3AF"
+        android:gravity="top"
+        android:inputType="textMultiLine"
+        android:minLines="4"
+        android:padding="16dp"
+        android:textSize="14sp"
+        android:textColor="#111827" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnCancelTask"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:paddingVertical="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="Hủy"
+            android:gravity="center"
+            android:textColor="#5C4033"
+            android:textStyle="bold"
+            android:background="@drawable/bg_info_box"
+            android:clickable="true"
+            android:focusable="true"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnAssignTask"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1.2"
+            android:layout_marginStart="8dp"
+            android:text="Giao việc"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            app:backgroundTint="#D95A11"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+</LinearLayout>
