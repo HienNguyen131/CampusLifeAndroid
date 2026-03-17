@@ -43,6 +43,18 @@ public class Activity implements Serializable {
     @SerializedName(value = "deleted", alternate = {"isDeleted"})
     public boolean isDeleted;
 
+    @SerializedName(value = "draft", alternate = {"isDraft"})
+    public Boolean isDraft;
+    
+    public Boolean requiresApproval;
+    
+    public String checkInCode;
+    
+    public Long seriesId;
+    public Integer seriesOrder;
+    
+    public String status;
+
     public Integer ticketQuantity;
     public String benefits;
     public String requirements;

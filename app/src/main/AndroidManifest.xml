@@ -44,6 +44,7 @@
         <activity android:name=".activity.LoginActivity" />
         <activity
             android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.AdminMainActivity" />
 
         <activity android:name=".activity.ListActivity" />
         <activity android:name=".activity.EventDetailActivity" />
@@ -63,11 +64,13 @@
         <activity android:name=".activity.SearchRegisActivity" />
         <activity android:name=".activity.StudentPreparationActivity" />
         <activity android:name=".activity.StudentPreparationDetailActivity" />
+        <activity android:name=".activity.AdminPreparationDashboardActivity" />
         <activity
             android:name=".activity.CheckinResultActivity"
             android:exported="false" />
 
         <activity android:name=".activity.ScanQRActivity" />
+        <activity android:name=".activity.CreateEventActivity" />
     </application>
 
 

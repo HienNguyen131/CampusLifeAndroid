@@ -157,6 +157,14 @@ public final class ApiClient {
         return create(ctx, DeviceTokenApi.class);
     }
 
+    public static StudentApi student(Context ctx) {
+        return create(ctx, StudentApi.class);
+    }
+
+    public static UploadApi upload(Context ctx) {
+        return create(ctx, UploadApi.class);
+    }
+
     public static synchronized void reset() {
         retrofitApi = null;
         retrofitNoAuth = null;

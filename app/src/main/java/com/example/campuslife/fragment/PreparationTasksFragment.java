@@ -64,11 +64,7 @@ public class PreparationTasksFragment extends Fragment {
         tvEmpty = view.findViewById(R.id.tvEmpty);
         rvTasks = view.findViewById(R.id.rvTasks);
 
-        adapter = new PreparationTaskAdapter(studentId, (task, newStatus) -> {
-            if (task == null || task.id == null)
-                return;
-            updateStatus(task, newStatus);
-        });
+        adapter = new com.example.campuslife.adapter.PreparationTaskAdapter(requireContext(), new java.util.ArrayList<>(), studentId, this::updateStatus);
 
         rvTasks.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         rvTasks.setAdapter(adapter);
