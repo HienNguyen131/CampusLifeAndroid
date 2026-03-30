@@ -51,7 +51,7 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
         ExpenseDto expense = list.get(position);
 
         holder.tvExpenseDesc.setText(expense.description != null ? expense.description : "No Description");
-        holder.tvReportedBy.setText(expense.reportedByName != null ? "Reported by " + expense.reportedByName : "Reported by Unknown");
+        holder.tvReportedBy.setText(expense.createdByName != null ? "Reported by " + expense.createdByName : "Reported by Unknown");
 
         if (expense.amount != null) {
             try {
@@ -87,13 +87,13 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
         }
 
         // Approval button logic
-        if (expense.approved == null) {
+        if (expense.status == null || expense.status.startsWith("PENDING")) {
             holder.llActions.setVisibility(View.VISIBLE);
             holder.tvStatus.setVisibility(View.GONE);
             
             holder.btnApprove.setOnClickListener(v -> handleApproval(holder, position, expense, true));
             holder.btnReject.setOnClickListener(v -> handleApproval(holder, position, expense, false));
-        } else if (expense.approved) {
+        } else if ("APPROVED".equals(expense.status)) {
             holder.llActions.setVisibility(View.GONE);
             holder.tvStatus.setVisibility(View.VISIBLE);
             holder.tvStatus.setText("Đã duyệt");
@@ -114,7 +114,7 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
                     @Override
                     public void onResponse(Call<ApiResponse<ExpenseDto>> call, Response<ApiResponse<ExpenseDto>> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                            expense.approved = isApproved;
+                            expense.status = isApproved ? "APPROVED" : "REJECTED";
                             notifyItemChanged(position);
                             Toast.makeText(context, isApproved ? "Đã duyệt" : "Đã từ chối", Toast.LENGTH_SHORT).show();
                         } else {

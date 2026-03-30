@@ -71,6 +71,7 @@
 
         <activity android:name=".activity.ScanQRActivity" />
         <activity android:name=".activity.CreateEventActivity" />
+        <activity android:name=".activity.BudgetSetupActivity" />
     </application>
 
 

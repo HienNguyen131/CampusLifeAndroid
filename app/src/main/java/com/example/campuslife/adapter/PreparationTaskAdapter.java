@@ -25,13 +25,13 @@ public class PreparationTaskAdapter extends RecyclerView.Adapter<PreparationTask
     private final Context context;
     private final List<PreparationTaskDto> list;
     private final long currentStudentId;
-    private final OnTaskStatusChangeListener listener;
+    private final OnTaskClickListener listener;
 
-    public interface OnTaskStatusChangeListener {
-        void onStatusChanged(PreparationTaskDto task, String newStatus);
+    public interface OnTaskClickListener {
+        void onTaskClicked(PreparationTaskDto task);
     }
 
-    public PreparationTaskAdapter(Context context, List<PreparationTaskDto> list, long currentStudentId, OnTaskStatusChangeListener listener) {
+    public PreparationTaskAdapter(Context context, List<PreparationTaskDto> list, long currentStudentId, OnTaskClickListener listener) {
         this.context = context;
         this.list = list;
         this.currentStudentId = currentStudentId;
@@ -53,12 +53,9 @@ public class PreparationTaskAdapter extends RecyclerView.Adapter<PreparationTask
         holder.tvAssigneeName.setText(task.assigneeName != null ? task.assigneeName : "No Assigned");
 
         holder.itemView.setOnClickListener(v -> {
-            boolean isMine = task.assigneeId != null && task.assigneeId == currentStudentId;
-            if (!isMine) {
-                android.widget.Toast.makeText(context, "Chỉ người phụ trách mới được cập nhật trạng thái nhiệm vụ này.", android.widget.Toast.LENGTH_SHORT).show();
-                return;
+            if (listener != null) {
+                listener.onTaskClicked(task);
             }
-            showStatusUpdateBottomSheet(task);
         });
 
         String status = task.status;
@@ -118,79 +115,5 @@ public class PreparationTaskAdapter extends RecyclerView.Adapter<PreparationTask
         notifyDataSetChanged();
     }
 
-    private void showStatusUpdateBottomSheet(PreparationTaskDto task) {
-        BottomSheetDialog dialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_bottom_sheet_update_status, null);
-        dialog.setContentView(view);
 
-        MaterialCardView cardPending = view.findViewById(R.id.cardPending);
-        MaterialCardView cardInProgress = view.findViewById(R.id.cardInProgress);
-        MaterialCardView cardCompleted = view.findViewById(R.id.cardCompleted);
-
-        View ivCheckPending = view.findViewById(R.id.ivCheckPending);
-        View ivCheckInProgress = view.findViewById(R.id.ivCheckInProgress);
-        View ivCheckCompleted = view.findViewById(R.id.ivCheckCompleted);
-
-        View btnConfirmStatus = view.findViewById(R.id.btnConfirmStatus);
-
-        final String[] selectedStatus = {task.status == null ? "PENDING" : task.status};
-
-        Runnable updateUI = () -> {
-            ivCheckPending.setVisibility(View.GONE);
-            ivCheckInProgress.setVisibility(View.GONE);
-            ivCheckCompleted.setVisibility(View.GONE);
-
-            cardPending.setCardBackgroundColor(Color.WHITE);
-            cardInProgress.setCardBackgroundColor(Color.WHITE);
-            cardCompleted.setCardBackgroundColor(Color.WHITE);
-
-            cardPending.setStrokeColor(Color.parseColor("#E5E7EB"));
-            cardInProgress.setStrokeColor(Color.parseColor("#E5E7EB"));
-            cardCompleted.setStrokeColor(Color.parseColor("#E5E7EB"));
-
-            switch (selectedStatus[0]) {
-                case "PENDING":
-                    ivCheckPending.setVisibility(View.VISIBLE);
-                    cardPending.setCardBackgroundColor(Color.parseColor("#FFFBEB"));
-                    cardPending.setStrokeColor(Color.parseColor("#F59E0B"));
-                    break;
-                case "ACCEPTED":
-                    ivCheckInProgress.setVisibility(View.VISIBLE);
-                    cardInProgress.setCardBackgroundColor(Color.parseColor("#EFF6FF"));
-                    cardInProgress.setStrokeColor(Color.parseColor("#3B82F6"));
-                    break;
-                case "COMPLETED":
-                    ivCheckCompleted.setVisibility(View.VISIBLE);
-                    cardCompleted.setCardBackgroundColor(Color.parseColor("#ECFDF5"));
-                    cardCompleted.setStrokeColor(Color.parseColor("#10B981"));
-                    break;
-            }
-        };
-
-        updateUI.run();
-
-        cardPending.setOnClickListener(v -> {
-            selectedStatus[0] = "PENDING";
-            updateUI.run();
-        });
-
-        cardInProgress.setOnClickListener(v -> {
-            selectedStatus[0] = "ACCEPTED";
-            updateUI.run();
-        });
-
-        cardCompleted.setOnClickListener(v -> {
-            selectedStatus[0] = "COMPLETED";
-            updateUI.run();
-        });
-
-        btnConfirmStatus.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onStatusChanged(task, selectedStatus[0]);
-            }
-            dialog.dismiss();
-        });
-
-        dialog.show();
-    }
 }

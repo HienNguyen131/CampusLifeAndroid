@@ -50,7 +50,22 @@ public class PreparationOrganizerAdapter extends RecyclerView.Adapter<Preparatio
         OrganizerDto config = list.get(position);
         holder.tvName.setText(config.getFullName() != null ? config.getFullName() : "Unknown");
         holder.tvStudentId.setText(config.getStudentId() != null ? String.valueOf(config.getStudentId()) : "Unknown");
-        holder.ivAvatar.setImageResource(R.drawable.ic_profile_2);
+        
+        if (holder.tvAvatarInitials != null) {
+            String name = config.getFullName();
+            if (name != null && !name.trim().isEmpty()) {
+                String[] parts = name.trim().split("\\s+");
+                String initials = "";
+                if (parts.length >= 2) {
+                    initials = parts[parts.length - 2].substring(0, 1) + parts[parts.length - 1].substring(0, 1);
+                } else {
+                    initials = parts[0].substring(0, 1);
+                }
+                holder.tvAvatarInitials.setText(initials.toUpperCase());
+            } else {
+                holder.tvAvatarInitials.setText("U");
+            }
+        }
 
         holder.btnDelete.setOnClickListener(v -> {
             new AlertDialog.Builder(context)
@@ -86,14 +101,17 @@ public class PreparationOrganizerAdapter extends RecyclerView.Adapter<Preparatio
         ShapeableImageView ivAvatar;
         TextView tvName;
         TextView tvStudentId;
-        TextView btnDelete;
+        android.view.View btnDelete;
+        TextView tvAvatarInitials;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+            // ivAvatar is optional if you use placeholder
             ivAvatar = itemView.findViewById(R.id.ivAvatar);
             tvName = itemView.findViewById(R.id.tvName);
             tvStudentId = itemView.findViewById(R.id.tvStudentId);
             btnDelete = itemView.findViewById(R.id.btnDelete);
+            tvAvatarInitials = itemView.findViewById(R.id.tvAvatarInitials);
         }
     }
 }

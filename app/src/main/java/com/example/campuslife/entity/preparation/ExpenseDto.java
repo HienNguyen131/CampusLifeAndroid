@@ -6,17 +6,16 @@ import java.io.Serializable;
 
 public class ExpenseDto implements Serializable {
     public Long id;
-
+    public Long activityId;
+    public Long taskId;
+    public String taskName;
+    public Long categoryId;
+    public String categoryName;
     public String amount;
-
     public String description;
-
-    public String createdAt;
-
-    @SerializedName(value = "reportedByName", alternate = { "createdByName" })
-    public String reportedByName;
-
     public String evidenceUrl;
-
-    public Boolean approved;
+    public String status;
+    public Long createdById;
+    public String createdByName;
+    public String createdAt;
 }

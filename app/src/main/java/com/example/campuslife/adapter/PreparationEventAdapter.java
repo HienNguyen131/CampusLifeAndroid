@@ -85,9 +85,9 @@ public class PreparationEventAdapter extends RecyclerView.Adapter<PreparationEve
         h.b.tvTasks.setText("Nhiệm vụ: " + tasksCount);
         h.b.tvPending.setText("Chờ: " + pendingCount);
 
-        if (d != null && d.budget != null) {
-            String remaining = formatMoney(d.budget.remainingAmount);
-            h.b.tvFinance.setText("Tài chính: Còn lại " + remaining);
+        if (d != null && d.activityBudget != null) {
+            String total = formatMoney(d.activityBudget.totalAmount);
+            h.b.tvFinance.setText("Ngân sách: " + total);
         } else if (d != null && d.financeMessage != null && !d.financeMessage.trim().isEmpty()) {
             h.b.tvFinance.setText("Tài chính: " + d.financeMessage);
         } else {

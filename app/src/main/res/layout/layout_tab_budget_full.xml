@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_light">
+
+    <!-- [KHỐI 1] Trạng thái Rỗng -->
+    <LinearLayout
+        android:id="@+id/layoutEmptyBudget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:src="@android:drawable/ic_menu_info_details"
+            app:tint="#D1D5DB" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Chưa thiết lập ngân sách"
+            android:textColor="@color/text_dark"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Khởi tạo tổng quỹ và cấu trúc ví ngay để giao việc cho ban tổ chức"
+            android:textAlignment="center"
+            android:textColor="@color/text_muted"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCreateBudgetSetup"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginTop="32dp"
+            android:paddingHorizontal="32dp"
+            android:text="Thiết Lập Ngay"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            app:backgroundTint="@color/primary_orange"
+            app:cornerRadius="16dp" />
+    </LinearLayout>
+
+    <!-- [KHỐI 2] Trạng thái Có ngân sách -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/layoutBudgetData"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Card Khái Quát Tổng Ngân Sách -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_gradient_orange_soft"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <TextView
+                        android:id="@+id/tvBigTotalLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TỔNG QUỸ SỰ KIỆN"
+                        android:textColor="#CCFFFFFF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvBigTotalAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0đ"
+                        android:textColor="#FFFFFF"
+                        android:textSize="28sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        
+                        <TextView
+                            android:id="@+id/tvBigSpent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tổng chi tiêu: 0đ"
+                            android:textColor="#FFE4E6"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/tvBigProgressPercent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textColor="#FFFFFF"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <com.google.android.material.progressindicator.LinearProgressIndicator
+                        android:id="@+id/progressBigTotal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="8dp"
+                        android:progress="0"
+                        app:indicatorColor="#FFFFFF"
+                        app:trackColor="#33FFFFFF"
+                        app:trackCornerRadius="4dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnEditBudgetSetup"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginTop="16dp"
+                        android:text="Chỉnh sửa"
+                        android:textColor="#a04100"
+                        android:textStyle="bold"
+                        app:backgroundTint="#FFFFFF"
+                        app:icon="@android:drawable/ic_menu_edit"
+                        app:cornerRadius="12dp"
+                        app:iconTint="#a04100" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Section Title -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DANH SÁCH VÍ PHÂN BỔ"
+                    android:textColor="@color/text_dark"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvTotalCategoriesCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="#E5E7EB"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:text="Số lượng: 0 ví"
+                    android:textColor="@color/text_muted"
+                    android:textSize="11sp" />
+            </RelativeLayout>
+
+            <!-- [KHỐI 3] Ví Phân Bổ Mặc Định (Residual) - Anti-Wrap Edition -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvResidualWallet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/residual_bg"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/primary_orange"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Mảng Trên -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp"
+                        android:paddingBottom="16dp">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp">
+                            
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ví hệ thống: Khác"
+                                android:textColor="#A03A00"
+                                android:textSize="15sp"
+                                android:textStyle="bold|italic"
+                                android:drawablePadding="8dp" />
+
+                            <com.google.android.material.chip.Chip
+                                android:layout_width="wrap_content"
+                                android:layout_height="24dp"
+                                android:layout_alignParentEnd="true"
+                                android:text="Tự động tính"
+                                android:textColor="#FFFFFF"
+                                android:textSize="9sp"
+                                android:textStyle="bold"
+                                app:chipBackgroundColor="@color/primary_orange"
+                                app:chipCornerRadius="8dp"
+                                app:strokeWidth="0dp" />
+                        </RelativeLayout>
+
+                        <!-- Tầng 1: Phân bổ và Đã dùng -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+                                <TextView
+                                    android:text="PHÂN BỔ"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/text_muted"
+                                    android:textStyle="bold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/tvResidualAllocated"
+                                    android:text="0đ"
+                                    android:textColor="@color/text_dark"
+                                    android:textStyle="bold"
+                                    android:textSize="15sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical"
+                                android:gravity="end">
+                                <TextView
+                                    android:text="ĐÃ DÙNG"
+                                    android:textSize="10sp"
+                                    android:textColor="@color/text_muted"
+                                    android:textStyle="bold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                                <TextView
+                                    android:id="@+id/tvResidualUsed"
+                                    android:text="0đ"
+                                    android:textColor="#DC2626"
+                                    android:textStyle="bold"
+                                    android:textSize="15sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Mảng Dưới (Edge to Edge) -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#1A0C4A6E"
+                        android:padding="24dp"
+                        android:paddingTop="16dp"
+                        android:paddingBottom="16dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:text="CÒN LẠI (DỰ KIẾN)"
+                            android:textSize="10sp"
+                            android:textColor="@color/remaining_blue"
+                            android:textStyle="bold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                        <TextView
+                            android:id="@+id/tvResidualRemaining"
+                            android:text="0đ"
+                            android:textColor="@color/remaining_blue"
+                            android:textStyle="bold"
+                            android:textSize="24sp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+
+                        <!-- [EDGE CASE] Cảnh báo Âm quỹ -->
+                        <TextView
+                            android:id="@+id/tvWarningResidualNegative"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:background="@drawable/bg_warning_soft"
+                            android:padding="12dp"
+                            android:text="⚠️ Số dư hiện tại đang âm. Vui lòng kiểm tra lại cấu trúc phân bổ hoặc cắt giảm chi phí."
+                            android:textColor="@color/warning_red_text"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- [KHỐI 4] Danh Sách Các Ví Tự Định Nghĩa -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvAdminWallets"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
