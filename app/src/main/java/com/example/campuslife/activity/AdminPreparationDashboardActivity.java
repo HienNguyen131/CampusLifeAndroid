@@ -35,6 +35,17 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     // UI Elements
     private ImageView btnBack;
     private TextView tvTotalAmount, tvSpentAmount, tvRemainingAmount;
+    private TextView tvWalletCount, tvTotalUsedPercent;
+    private com.google.android.material.progressindicator.LinearProgressIndicator progressTotalBudget;
+    
+    // Full Budget Tab UI Elements
+    private android.view.View layoutEmptyBudget, layoutBudgetData, layoutBudgetFull, cvResidualWallet;
+    private TextView tvBigTotalAmount, tvBigSpent, tvBigProgressPercent, tvTotalCategoriesCount;
+    private TextView tvResidualAllocated, tvResidualUsed, tvResidualRemaining, tvWarningResidualNegative;
+    private com.google.android.material.progressindicator.LinearProgressIndicator progressBigTotal;
+    private RecyclerView rvAdminWallets;
+    private com.example.campuslife.adapter.PreparationAdminWalletAdapter adminWalletAdapter;
+    private List<com.example.campuslife.entity.preparation.BudgetCategoryDto> adminWalletList;
     
     // RecyclerViews
     private RecyclerView rvOrganizers, rvTasks, rvExpenses;
@@ -51,6 +62,7 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     
     private final DecimalFormat df = new DecimalFormat("#,###");
     private Long selectedAssigneeId = null;
+    private boolean hasPreparation = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +81,12 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         setupFabListener();
         
         loadDashboardData();
-        loadOrganizersData();
-        loadExpensesData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadDashboardData();
     }
 
     private void initViews() {
@@ -80,34 +96,66 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         tvTotalAmount = findViewById(R.id.tvTotalAmount);
         tvSpentAmount = findViewById(R.id.tvSpentAmount);
         tvRemainingAmount = findViewById(R.id.tvRemainingAmount);
+        tvWalletCount = findViewById(R.id.tvWalletCount);
+        tvTotalUsedPercent = findViewById(R.id.tvTotalUsedPercent);
+        progressTotalBudget = findViewById(R.id.progressTotalBudget);
         
         rvOrganizers = findViewById(R.id.rvOrganizers);
         rvTasks = findViewById(R.id.rvTasks);
         rvExpenses = findViewById(R.id.rvExpenses);
+        
+        layoutBudgetFull = findViewById(R.id.layoutBudgetFull);
+        layoutEmptyBudget = findViewById(R.id.layoutEmptyBudget);
+        layoutBudgetData = findViewById(R.id.layoutBudgetData);
+        cvResidualWallet = findViewById(R.id.cvResidualWallet);
+        tvBigTotalAmount = findViewById(R.id.tvBigTotalAmount);
+        tvBigSpent = findViewById(R.id.tvBigSpent);
+        tvBigProgressPercent = findViewById(R.id.tvBigProgressPercent);
+        tvTotalCategoriesCount = findViewById(R.id.tvTotalCategoriesCount);
+        tvResidualAllocated = findViewById(R.id.tvResidualAllocated);
+        tvResidualUsed = findViewById(R.id.tvResidualUsed);
+        tvResidualRemaining = findViewById(R.id.tvResidualRemaining);
+        tvWarningResidualNegative = findViewById(R.id.tvWarningResidualNegative);
+        progressBigTotal = findViewById(R.id.progressBigTotal);
+        rvAdminWallets = findViewById(R.id.rvAdminWallets);
+        
+        if (findViewById(R.id.btnCreateBudgetSetup) != null) {
+            findViewById(R.id.btnCreateBudgetSetup).setOnClickListener(v -> com.example.campuslife.activity.BudgetSetupActivity.start(this, activityId));
+        }
+        if (findViewById(R.id.btnEditBudgetSetup) != null) {
+            findViewById(R.id.btnEditBudgetSetup).setOnClickListener(v -> com.example.campuslife.activity.BudgetSetupActivity.start(this, activityId));
+        }
+
+        com.google.android.material.button.MaterialButton btnToggle = findViewById(R.id.btnTogglePreparation);
+        if (btnToggle != null) {
+            btnToggle.setOnClickListener(v -> togglePreparation(!hasPreparation));
+        }
+
+        android.view.View layoutNoPrep = findViewById(R.id.layoutNoPreparation);
+        if (layoutNoPrep != null) {
+            layoutNoPrep.setOnClickListener(v -> togglePreparation(true)); // Click on Empty State
+        }
     }
 
     private void setupRecyclerViews() {
+        adminWalletList = new ArrayList<>();
+        if (rvAdminWallets != null) {
+            adminWalletAdapter = new com.example.campuslife.adapter.PreparationAdminWalletAdapter(this, adminWalletList);
+            rvAdminWallets.setLayoutManager(new LinearLayoutManager(this));
+            rvAdminWallets.setAdapter(adminWalletAdapter);
+        }
+
         organizerList = new ArrayList<>();
         organizerAdapter = new PreparationOrganizerAdapter(this, organizerList, activityId, this::loadOrganizersData);
         rvOrganizers.setLayoutManager(new LinearLayoutManager(this));
         rvOrganizers.setAdapter(organizerAdapter);
         
         taskList = new ArrayList<>();
-        taskAdapter = new PreparationTaskAdapter(this, taskList, -1L, (task, newStatus) -> {
-            ApiClient.preparation(this).updateTaskStatus(task.id, new com.example.campuslife.entity.preparation.UpdateTaskStatusRequest(newStatus))
-                    .enqueue(new Callback<ApiResponse<PreparationTaskDto>>() {
-                        @Override
-                        public void onResponse(Call<ApiResponse<PreparationTaskDto>> call, Response<ApiResponse<PreparationTaskDto>> response) {
-                            if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                                Toast.makeText(AdminPreparationDashboardActivity.this, "Cập nhật thành công", Toast.LENGTH_SHORT).show();
-                                loadDashboardData();
-                            } else {
-                                Toast.makeText(AdminPreparationDashboardActivity.this, "Cập nhật lỗi", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        @Override
-                        public void onFailure(Call<ApiResponse<PreparationTaskDto>> call, Throwable t) {}
-                    });
+        taskAdapter = new PreparationTaskAdapter(this, taskList, -1L, task -> {
+            com.example.campuslife.utils.PreparationTaskDetailManager manager = new com.example.campuslife.utils.PreparationTaskDetailManager(
+                this, activityId, -1L, task, this::loadDashboardData
+            );
+            manager.show();
         });
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
         rvTasks.setAdapter(taskAdapter);
@@ -126,21 +174,70 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                     PreparationDashboardDto dto = response.body().getData();
                     
                     if (dto != null) {
-                        // Budget binding
-                        if (dto.budget != null) {
-                            try {
-                                tvTotalAmount.setText(dto.budget.totalAmount != null ? df.format(Double.parseDouble(dto.budget.totalAmount)) + " VNĐ" : "0 VNĐ");
-                            } catch (Exception e) { tvTotalAmount.setText(dto.budget.totalAmount + " VNĐ"); }
+                        hasPreparation = dto.hasPreparation;
+                        updatePreparationToggleUI();
+                        
+                        if (!hasPreparation) return;
 
-                            try {
-                                tvSpentAmount.setText(dto.budget.spentAmount != null ? df.format(Double.parseDouble(dto.budget.spentAmount)) + " VNĐ" : "0 VNĐ");
-                            } catch (Exception e) { tvSpentAmount.setText(dto.budget.spentAmount + " VNĐ"); }
+                        loadFinanceOverview();
+                        loadOrganizersData();
+                        loadWorkloadWarningsData();
+                        loadExpensesData();
 
-                            try {
-                                tvRemainingAmount.setText(dto.budget.remainingAmount != null ? df.format(Double.parseDouble(dto.budget.remainingAmount)) + " VNĐ" : "0 VNĐ");
-                            } catch (Exception e) { tvRemainingAmount.setText(dto.budget.remainingAmount + " VNĐ"); }
+                        try {
+                            if (tvWalletCount != null) {
+                                int walletCount = (dto.activityBudget != null && dto.activityBudget.categories != null) ? dto.activityBudget.categories.size() : 0;
+                                tvWalletCount.setText("• Gồm " + walletCount + " ví nhỏ");
+                            }
+                        } catch (Exception e) {}
+                        
+                        // Full budget wallet bindings
+                        if (dto.activityBudget != null && dto.activityBudget.categories != null && !dto.activityBudget.categories.isEmpty()) {
+                            if (layoutEmptyBudget != null) layoutEmptyBudget.setVisibility(android.view.View.GONE);
+                            if (layoutBudgetData != null) layoutBudgetData.setVisibility(android.view.View.VISIBLE);
+                            
+                            adminWalletList.clear();
+                            com.example.campuslife.entity.preparation.BudgetCategoryDto residual = null;
+                            for (com.example.campuslife.entity.preparation.BudgetCategoryDto cat : dto.activityBudget.categories) {
+                                if (cat.name != null && (cat.name.equalsIgnoreCase("Khác") || cat.name.equalsIgnoreCase("Khac"))) {
+                                    residual = cat;
+                                } else {
+                                    adminWalletList.add(cat);
+                                }
+                            }
+                            
+                            if (residual != null) {
+                                if (cvResidualWallet != null) cvResidualWallet.setVisibility(android.view.View.VISIBLE);
+                                try {
+                                    double alloc = residual.allocatedAmount != null ? Double.parseDouble(residual.allocatedAmount) : 0;
+                                    if (tvResidualAllocated != null) tvResidualAllocated.setText(df.format(alloc) + "đ");
+                                } catch (Exception e) {}
+                                try {
+                                    double used = residual.usedAmount != null ? Double.parseDouble(residual.usedAmount) : 0;
+                                    if (tvResidualUsed != null) tvResidualUsed.setText(df.format(used) + "đ");
+                                } catch (Exception e) {}
+                                try {
+                                    double remain = residual.remainingAmount != null ? Double.parseDouble(residual.remainingAmount) : 0;
+                                    if (tvResidualRemaining != null) tvResidualRemaining.setText((remain < 0 ? "-" : "") + df.format(Math.abs(remain)) + "đ");
+                                    if (tvWarningResidualNegative != null) {
+                                        tvWarningResidualNegative.setVisibility(remain < 0 ? android.view.View.VISIBLE : android.view.View.GONE);
+                                    }
+                                } catch (Exception e) {}
+                            } else {
+                                if (cvResidualWallet != null) cvResidualWallet.setVisibility(android.view.View.GONE);
+                            }
+                            
+                            if (tvTotalCategoriesCount != null) {
+                                tvTotalCategoriesCount.setText("Số lượng: " + adminWalletList.size() + " ví");
+                            }
+                            
+                            if (adminWalletAdapter != null) adminWalletAdapter.notifyDataSetChanged();
+                            
+                        } else {
+                            if (layoutEmptyBudget != null) layoutEmptyBudget.setVisibility(android.view.View.VISIBLE);
+                            if (layoutBudgetData != null) layoutBudgetData.setVisibility(android.view.View.GONE);
                         }
-                    
+                        
                         // Tasks binding
                         taskList.clear();
                         if (dto.tasks != null && !dto.tasks.isEmpty()) {
@@ -149,7 +246,12 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                         taskAdapter.notifyDataSetChanged();
                     }
                 } else {
-                    Toast.makeText(AdminPreparationDashboardActivity.this, "Lỗi tải Dashboard", Toast.LENGTH_SHORT).show();
+                    if (response.code() == 400 || response.code() == 403) {
+                        hasPreparation = false;
+                        updatePreparationToggleUI();
+                    } else {
+                        Toast.makeText(AdminPreparationDashboardActivity.this, "Lỗi tải Dashboard", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
@@ -157,6 +259,114 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
             public void onFailure(Call<ApiResponse<PreparationDashboardDto>> call, Throwable t) {
                 Toast.makeText(AdminPreparationDashboardActivity.this, "Lỗi mạng Dashboard", Toast.LENGTH_SHORT).show();
             }
+        });
+    }
+
+    private void updatePreparationToggleUI() {
+        com.google.android.material.button.MaterialButton btnToggle = findViewById(R.id.btnTogglePreparation);
+        android.view.View layoutNoPrep = findViewById(R.id.layoutNoPreparation);
+        android.view.View scrollView = findViewById(R.id.scrollView);
+        com.google.android.material.tabs.TabLayout tabLayout = findViewById(R.id.tabLayout);
+
+        if (btnToggle != null) {
+            btnToggle.setVisibility(android.view.View.VISIBLE);
+            if (hasPreparation) {
+                btnToggle.setText("Tắt");
+                btnToggle.setTextColor(android.graphics.Color.parseColor("#4B5563"));
+                btnToggle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#F3F4F6")));
+                btnToggle.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#E5E7EB")));
+            } else {
+                btnToggle.setText("Bật");
+                btnToggle.setTextColor(android.graphics.Color.parseColor("#FFFFFF"));
+                btnToggle.setBackgroundTintList(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#10B981")));
+                btnToggle.setStrokeColor(android.content.res.ColorStateList.valueOf(android.graphics.Color.parseColor("#10B981")));
+            }
+        }
+
+        if (hasPreparation) {
+            if (layoutNoPrep != null) layoutNoPrep.setVisibility(android.view.View.GONE);
+            if (scrollView != null) scrollView.setVisibility(android.view.View.VISIBLE);
+            if (tabLayout != null) tabLayout.setVisibility(android.view.View.VISIBLE);
+        } else {
+            if (layoutNoPrep != null) layoutNoPrep.setVisibility(android.view.View.VISIBLE);
+            if (scrollView != null) scrollView.setVisibility(android.view.View.GONE);
+            if (tabLayout != null) tabLayout.setVisibility(android.view.View.GONE);
+        }
+    }
+
+    private void togglePreparation(boolean enabled) {
+        ApiClient.preparation(this).togglePreparation(activityId, enabled).enqueue(new Callback<ApiResponse<Object>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    Toast.makeText(AdminPreparationDashboardActivity.this, enabled ? "Đã bật Preparation" : "Đã tắt Preparation", Toast.LENGTH_SHORT).show();
+                    hasPreparation = enabled;
+                    updatePreparationToggleUI();
+                    if (enabled) {
+                        loadDashboardData();
+                        loadFinanceOverview();
+                        loadOrganizersData();
+                        loadWorkloadWarningsData();
+                        loadExpensesData();
+                    }
+                } else {
+                    Toast.makeText(AdminPreparationDashboardActivity.this, "Lỗi khi chuyển đổi", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
+                Toast.makeText(AdminPreparationDashboardActivity.this, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadFinanceOverview() {
+        ApiClient.preparation(this).getFinanceOverview(activityId).enqueue(new Callback<ApiResponse<com.example.campuslife.entity.preparation.FinanceOverviewReportDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.campuslife.entity.preparation.FinanceOverviewReportDto>> call, Response<ApiResponse<com.example.campuslife.entity.preparation.FinanceOverviewReportDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    com.example.campuslife.entity.preparation.FinanceOverviewReportDto dto = response.body().getData();
+                    if (dto != null) {
+                        try {
+                            tvTotalAmount.setText(dto.totalBudget != null ? df.format(Double.parseDouble(dto.totalBudget)) + " VNĐ" : "0 VNĐ");
+                        } catch (Exception e) { tvTotalAmount.setText(dto.totalBudget + " VNĐ"); }
+
+                        try {
+                            tvSpentAmount.setText(dto.totalApprovedSpent != null ? df.format(Double.parseDouble(dto.totalApprovedSpent)) + " VNĐ" : "0 VNĐ");
+                        } catch (Exception e) { tvSpentAmount.setText(dto.totalApprovedSpent + " VNĐ"); }
+                        
+                        try {
+                            double total = dto.totalBudget != null ? Double.parseDouble(dto.totalBudget) : 0;
+                            double spent = dto.totalApprovedSpent != null ? Double.parseDouble(dto.totalApprovedSpent) : 0;
+                            double remain = total - spent;
+                            tvRemainingAmount.setText(df.format(remain) + " VNĐ");
+
+                            if (total > 0) {
+                                int pct = (int) Math.round((spent / total) * 100);
+                                if (progressTotalBudget != null) progressTotalBudget.setProgress(Math.min(pct, 100));
+                                if (tvTotalUsedPercent != null) tvTotalUsedPercent.setText(pct + "%");
+                            } else {
+                                if (progressTotalBudget != null) progressTotalBudget.setProgress(0);
+                                if (tvTotalUsedPercent != null) tvTotalUsedPercent.setText("0%");
+                            }
+                            
+                            if (tvBigTotalAmount != null) tvBigTotalAmount.setText(tvTotalAmount.getText());
+                            if (tvBigSpent != null) tvBigSpent.setText("Tổng chi tiêu: " + tvSpentAmount.getText());
+                            if (tvBigProgressPercent != null) tvBigProgressPercent.setText(tvTotalUsedPercent.getText());
+                            if (progressBigTotal != null && progressTotalBudget != null) progressBigTotal.setProgress(progressTotalBudget.getProgress());
+                            
+                        } catch (Exception e) { 
+                            tvRemainingAmount.setText("0 VNĐ");
+                            if (progressTotalBudget != null) progressTotalBudget.setProgress(0);
+                            if (tvTotalUsedPercent != null) tvTotalUsedPercent.setText("0%");
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.preparation.FinanceOverviewReportDto>> call, Throwable t) {}
         });
     }
 
@@ -176,6 +386,72 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ApiResponse<List<OrganizerDto>>> call, Throwable t) {}
+        });
+    }
+
+    private void loadWorkloadWarningsData() {
+        ApiClient.preparation(this).getWorkloadWarnings(activityId).enqueue(new Callback<ApiResponse<List<com.example.campuslife.entity.preparation.WorkloadWarningDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<com.example.campuslife.entity.preparation.WorkloadWarningDto>>> call, Response<ApiResponse<List<com.example.campuslife.entity.preparation.WorkloadWarningDto>>> response) {
+                android.view.View card = findViewById(R.id.cardWorkloadWarnings);
+                android.widget.LinearLayout container = findViewById(R.id.llWorkloadContainer);
+                if (card == null || container == null) return;
+
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    List<com.example.campuslife.entity.preparation.WorkloadWarningDto> data = response.body().getData();
+                    if (data != null && !data.isEmpty()) {
+                        card.setVisibility(android.view.View.VISIBLE);
+                        container.removeAllViews();
+                        
+                        android.view.LayoutInflater inflater = android.view.LayoutInflater.from(AdminPreparationDashboardActivity.this);
+                        for (com.example.campuslife.entity.preparation.WorkloadWarningDto warning : data) {
+                            android.view.View view = inflater.inflate(R.layout.item_workload_warning, container, false);
+                            
+                            TextView tvName = view.findViewById(R.id.tvWarningName);
+                            TextView tvDesc = view.findViewById(R.id.tvWarningDesc);
+                            TextView tvBadge = view.findViewById(R.id.tvWarningBadge);
+                            
+                            tvName.setText(warning.getStudentName() != null ? warning.getStudentName() : "Unknown");
+                            tvDesc.setText((warning.getTaskCount() != null ? warning.getTaskCount() : 0) + " tasks currently assigned");
+                            
+                            String type = warning.getType() != null ? warning.getType() : "UNKNOWN";
+                            tvBadge.setText(type);
+                            
+                            if ("OVERLOADED".equalsIgnoreCase(type)) {
+                                tvBadge.setTextColor(android.graphics.Color.parseColor("#93000a"));
+                                android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+                                bg.setColor(android.graphics.Color.parseColor("#ffdad6"));
+                                bg.setCornerRadius(100f);
+                                tvBadge.setBackground(bg);
+                            } else if ("UNASSIGNED".equalsIgnoreCase(type)) {
+                                tvBadge.setTextColor(android.graphics.Color.parseColor("#594237"));
+                                android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
+                                bg.setColor(android.graphics.Color.parseColor("#e2e2e2"));
+                                bg.setCornerRadius(100f);
+                                tvBadge.setBackground(bg);
+                            }
+                            
+                            container.addView(view);
+                        }
+                        com.google.android.material.tabs.TabLayout tabLayout = findViewById(R.id.tabLayout);
+                        if (tabLayout != null) {
+                            updateTabSelection(tabLayout.getSelectedTabPosition());
+                        } else {
+                            card.setVisibility(android.view.View.VISIBLE);
+                        }
+                    } else {
+                        card.setVisibility(android.view.View.GONE);
+                    }
+                } else {
+                    card.setVisibility(android.view.View.GONE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.WorkloadWarningDto>>> call, Throwable t) {
+                android.view.View card = findViewById(R.id.cardWorkloadWarnings);
+                if (card != null) card.setVisibility(android.view.View.GONE);
+            }
         });
     }
 
@@ -199,10 +475,10 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     }
 
     private void setupFabListener() {
-        android.view.View btnUpdateBudget = findViewById(R.id.btnUpdateBudget);
-        if (btnUpdateBudget != null) {
-            btnUpdateBudget.setOnClickListener(v -> showUpdateBudgetDialog());
-        }
+        // android.view.View btnUpdateBudget = findViewById(R.id.btnUpdateBudget);
+        // if (btnUpdateBudget != null) {
+        //     btnUpdateBudget.setOnClickListener(v -> showUpdateBudgetDialog());
+        // }
 
         android.view.View btnAddOrganizer = findViewById(R.id.btnAddOrganizer);
         if (btnAddOrganizer != null) {
@@ -255,7 +531,10 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         
         // Hide "View All" buttons and custom buttons appropriately
         findViewById(R.id.tvViewAllBudget).setVisibility(showAll ? android.view.View.VISIBLE : android.view.View.GONE);
-        findViewById(R.id.btnUpdateBudget).setVisibility(position == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
+        // android.view.View btnUpdateBudget = findViewById(R.id.btnUpdateBudget);
+        // if (btnUpdateBudget != null) {
+        //     btnUpdateBudget.setVisibility(position == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
+        // }
 
         findViewById(R.id.tvViewAllOrganizers).setVisibility(showAll ? android.view.View.VISIBLE : android.view.View.GONE);
         findViewById(R.id.btnAddOrganizer).setVisibility(position == 2 ? android.view.View.VISIBLE : android.view.View.GONE);
@@ -266,8 +545,10 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         findViewById(R.id.tvViewAllExpenses).setVisibility(showAll ? android.view.View.VISIBLE : android.view.View.GONE);
         
         // Overview = 0, Budget = 1, Organizers = 2, Tasks = 3, Expenses = 4
-        findViewById(R.id.cvBudget).setVisibility(showAll || position == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
+        findViewById(R.id.cvBudget).setVisibility(showAll ? android.view.View.VISIBLE : android.view.View.GONE);
+        if (layoutBudgetFull != null) layoutBudgetFull.setVisibility(position == 1 ? android.view.View.VISIBLE : android.view.View.GONE);
         
+        findViewById(R.id.cardWorkloadWarnings).setVisibility((showAll || position == 2) && ((android.widget.LinearLayout)findViewById(R.id.llWorkloadContainer)).getChildCount() > 0 ? android.view.View.VISIBLE : android.view.View.GONE);
         findViewById(R.id.layoutOrganizersHeader).setVisibility(showAll || position == 2 ? android.view.View.VISIBLE : android.view.View.GONE);
         findViewById(R.id.rvOrganizers).setVisibility(showAll || position == 2 ? android.view.View.VISIBLE : android.view.View.GONE);
         
@@ -292,20 +573,20 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
             String desc = etBudgetDescription.getText().toString();
             if (!amountStr.isEmpty()) {
                 ApiClient.preparation(this).upsertBudget(activityId, 
-                        new com.example.campuslife.entity.preparation.UpsertBudgetRequest(Double.parseDouble(amountStr), desc))
-                        .enqueue(new Callback<ApiResponse<com.example.campuslife.entity.preparation.BudgetDto>>() {
+                        new com.example.campuslife.entity.preparation.UpsertActivityBudgetRequest(amountStr, new java.util.ArrayList<>()))
+                        .enqueue(new Callback<ApiResponse<com.example.campuslife.entity.preparation.ActivityBudgetDto>>() {
                             @Override
-                            public void onResponse(Call<ApiResponse<com.example.campuslife.entity.preparation.BudgetDto>> call, Response<ApiResponse<com.example.campuslife.entity.preparation.BudgetDto>> response) {
+                            public void onResponse(Call<ApiResponse<com.example.campuslife.entity.preparation.ActivityBudgetDto>> call, Response<ApiResponse<com.example.campuslife.entity.preparation.ActivityBudgetDto>> response) {
                                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                                    Toast.makeText(AdminPreparationDashboardActivity.this, "Budget Updated", Toast.LENGTH_SHORT).show();
-                                    loadDashboardData();
+                                    Toast.makeText(AdminPreparationDashboardActivity.this, "Đã cập nhật ngân sách", Toast.LENGTH_SHORT).show();
+                                    loadFinanceOverview();
                                     dialog.dismiss();
                                 } else {
-                                    Toast.makeText(AdminPreparationDashboardActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(AdminPreparationDashboardActivity.this, "Cập nhật thất bại", Toast.LENGTH_SHORT).show();
                                 }
                             }
                             @Override
-                            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.preparation.BudgetDto>> call, Throwable t) {}
+                            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.preparation.ActivityBudgetDto>> call, Throwable t) {}
                         });
             } else {
                 Toast.makeText(this, "Amount is required", Toast.LENGTH_SHORT).show();
@@ -315,7 +596,6 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private Long selectedStudentIdForOrganizer = null;
     private android.os.Handler searchHandler = new android.os.Handler(android.os.Looper.getMainLooper());
     private Runnable searchRunnable;
 
@@ -324,12 +604,15 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         dialog.setContentView(R.layout.layout_dialog_add_organizer);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
         dialog.getWindow().setLayout(android.view.ViewGroup.LayoutParams.MATCH_PARENT, android.view.ViewGroup.LayoutParams.WRAP_CONTENT);
+        
         android.widget.EditText etStudentId = dialog.findViewById(R.id.etStudentId);
-        android.widget.LinearLayout llSearchResults = dialog.findViewById(R.id.llSearchResults);
-        android.widget.ScrollView svSearchResults = dialog.findViewById(R.id.svSearchResults);
         android.widget.ProgressBar pbSearchLoading = dialog.findViewById(R.id.pbSearchLoading);
+        android.widget.TextView tvStatusMessage = dialog.findViewById(R.id.tvStatusMessage);
+        android.widget.ScrollView svSearchResults = dialog.findViewById(R.id.svSearchResults);
+        android.widget.LinearLayout llSearchResults = dialog.findViewById(R.id.llSearchResults);
         android.widget.TextView tvNoSearchRes = dialog.findViewById(R.id.tvNoSearchRes);
-        selectedStudentIdForOrganizer = null;
+        android.view.View btnCancel = dialog.findViewById(R.id.btnCancelOrganizer);
+        android.view.View btnAdd = dialog.findViewById(R.id.btnAddOrganizer);
 
         etStudentId.addTextChangedListener(new android.text.TextWatcher() {
             @Override
@@ -344,43 +627,40 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                     searchHandler.removeCallbacks(searchRunnable);
                 }
                 
-                String keyword = s.toString().trim();
-                if (keyword.length() < 2) {
-                    svSearchResults.setVisibility(android.view.View.GONE);
-                    pbSearchLoading.setVisibility(android.view.View.GONE);
-                    tvNoSearchRes.setVisibility(android.view.View.GONE);
-                    selectedStudentIdForOrganizer = null;
-                    return;
-                }
-                
-                if (selectedStudentIdForOrganizer != null && keyword.contains("-")) {
-                    return;
-                }
-                selectedStudentIdForOrganizer = null;
+                String fullText = s.toString();
+                int lastCommaIndex = fullText.lastIndexOf(',');
+                String keyword = lastCommaIndex == -1 ? fullText.trim() : fullText.substring(lastCommaIndex + 1).trim();
 
-                pbSearchLoading.setVisibility(android.view.View.VISIBLE);
-                svSearchResults.setVisibility(android.view.View.GONE);
-                tvNoSearchRes.setVisibility(android.view.View.GONE);
+                if (keyword.length() < 2) {
+                    if (svSearchResults != null) svSearchResults.setVisibility(android.view.View.GONE);
+                    if (pbSearchLoading != null) pbSearchLoading.setVisibility(android.view.View.GONE);
+                    if (tvNoSearchRes != null) tvNoSearchRes.setVisibility(android.view.View.GONE);
+                    return;
+                }
+
+                if (pbSearchLoading != null) pbSearchLoading.setVisibility(android.view.View.VISIBLE);
+                if (svSearchResults != null) svSearchResults.setVisibility(android.view.View.GONE);
+                if (tvNoSearchRes != null) tvNoSearchRes.setVisibility(android.view.View.GONE);
 
                 searchRunnable = () -> {
                     ApiClient.student(AdminPreparationDashboardActivity.this)
                             .searchStudents(keyword, 0, 10).enqueue(new Callback<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>>() {
                         @Override
                         public void onResponse(Call<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>> call, Response<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>> response) {
-                            pbSearchLoading.setVisibility(android.view.View.GONE);
+                            if (pbSearchLoading != null) pbSearchLoading.setVisibility(android.view.View.GONE);
                             if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                                 java.util.List<com.example.campuslife.entity.Student> currentSearchResult = new java.util.ArrayList<>();
                                 if (response.body().getData() != null && response.body().getData().content != null) {
                                     currentSearchResult.addAll(response.body().getData().content);
                                 }
                                 
-                                llSearchResults.removeAllViews();
+                                if (llSearchResults != null) llSearchResults.removeAllViews();
                                 if (currentSearchResult.isEmpty()) {
-                                    tvNoSearchRes.setVisibility(android.view.View.VISIBLE);
-                                    svSearchResults.setVisibility(android.view.View.GONE);
+                                    if (tvNoSearchRes != null) tvNoSearchRes.setVisibility(android.view.View.VISIBLE);
+                                    if (svSearchResults != null) svSearchResults.setVisibility(android.view.View.GONE);
                                 } else {
-                                    tvNoSearchRes.setVisibility(android.view.View.GONE);
-                                    svSearchResults.setVisibility(android.view.View.VISIBLE);
+                                    if (tvNoSearchRes != null) tvNoSearchRes.setVisibility(android.view.View.GONE);
+                                    if (svSearchResults != null) svSearchResults.setVisibility(android.view.View.VISIBLE);
                                     for (com.example.campuslife.entity.Student student : currentSearchResult) {
                                         android.widget.LinearLayout itemLayout = new android.widget.LinearLayout(AdminPreparationDashboardActivity.this);
                                         itemLayout.setOrientation(android.widget.LinearLayout.VERTICAL);
@@ -407,64 +687,175 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                                         itemLayout.setBackgroundResource(outValue.resourceId);
 
                                         itemLayout.setClickable(true);
-                                        itemLayout.setOnClickListener(v -> {
-                                            selectedStudentIdForOrganizer = student.getId();
-                                            etStudentId.setText(student.getStudentCode() + " - " + student.getFullName());
+                                        itemLayout.setOnClickListener((android.view.View v) -> {
+                                            String currentFullText = etStudentId.getText().toString();
+                                            int lastComma = currentFullText.lastIndexOf(',');
+                                            String prefix = lastComma == -1 ? "" : currentFullText.substring(0, lastComma + 1) + " ";
+                                            etStudentId.setText(prefix + student.getStudentCode() + ", ");
                                             etStudentId.setSelection(etStudentId.getText().length());
-                                            svSearchResults.setVisibility(android.view.View.GONE);
-                                            android.view.inputmethod.InputMethodManager imm = (android.view.inputmethod.InputMethodManager) getSystemService(android.content.Context.INPUT_METHOD_SERVICE);
-                                            if (imm != null) {
-                                                imm.hideSoftInputFromWindow(etStudentId.getWindowToken(), 0);
-                                            }
+                                            if (svSearchResults != null) svSearchResults.setVisibility(android.view.View.GONE);
                                         });
-                                        llSearchResults.addView(itemLayout);
+                                        if (llSearchResults != null) llSearchResults.addView(itemLayout);
                                         
                                         android.view.View divider = new android.view.View(AdminPreparationDashboardActivity.this);
                                         divider.setLayoutParams(new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, 1));
                                         divider.setBackgroundColor(android.graphics.Color.parseColor("#E5E7EB"));
-                                        llSearchResults.addView(divider);
+                                        if (llSearchResults != null) llSearchResults.addView(divider);
                                     }
                                 }
                             } else {
-                                tvNoSearchRes.setVisibility(android.view.View.VISIBLE);
+                                if (tvNoSearchRes != null) tvNoSearchRes.setVisibility(android.view.View.VISIBLE);
                             }
                         }
 
                         @Override
                         public void onFailure(Call<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>> call, Throwable t) {
-                            pbSearchLoading.setVisibility(android.view.View.GONE);
-                            tvNoSearchRes.setVisibility(android.view.View.VISIBLE);
+                            if (pbSearchLoading != null) pbSearchLoading.setVisibility(android.view.View.GONE);
+                            if (tvNoSearchRes != null) tvNoSearchRes.setVisibility(android.view.View.VISIBLE);
                         }
                     });
                 };
-                searchHandler.postDelayed(searchRunnable, 500); // 500ms debounce
+                searchHandler.postDelayed(searchRunnable, 400);
             }
         });
 
-        dialog.findViewById(R.id.btnCancelOrganizer).setOnClickListener(v -> dialog.dismiss());
-        dialog.findViewById(R.id.btnAddOrganizer).setOnClickListener(v -> {
-            if (selectedStudentIdForOrganizer != null) {
-                ApiClient.preparation(this).addOrganizer(activityId, selectedStudentIdForOrganizer)
-                        .enqueue(new Callback<ApiResponse<Object>>() {
-                            @Override
-                            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> response) {
-                                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                                    Toast.makeText(AdminPreparationDashboardActivity.this, "Organizer Added", Toast.LENGTH_SHORT).show();
-                                    loadOrganizersData();
-                                    dialog.dismiss();
-                                } else {
-                                    Toast.makeText(AdminPreparationDashboardActivity.this, "Error or Invalid User", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                            @Override
-                            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {}
-                        });
-            } else {
-                Toast.makeText(this, "Vui lòng chọn sinh viên từ danh sách gợi ý", Toast.LENGTH_SHORT).show();
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+        btnAdd.setOnClickListener(v -> {
+            String input = etStudentId.getText().toString().trim();
+            if (input.isEmpty()) {
+                Toast.makeText(this, "Vui lòng nhập MSSV", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            // Split by comma or space
+            String[] rawIds = input.split("[,\\s]+");
+            java.util.List<String> validIds = new java.util.ArrayList<>();
+            for (String split : rawIds) {
+                if (!split.trim().isEmpty()) {
+                    validIds.add(split.trim());
+                }
+            }
+
+            if (validIds.isEmpty()) {
+                Toast.makeText(this, "Danh sách MSSV không hợp lệ", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            pbSearchLoading.setVisibility(android.view.View.VISIBLE);
+            tvStatusMessage.setVisibility(android.view.View.VISIBLE);
+            tvStatusMessage.setText("Đang xử lý " + validIds.size() + " sinh viên...");
+            etStudentId.setEnabled(false);
+            btnAdd.setEnabled(false);
+            btnCancel.setEnabled(false);
+
+            processMultipleOrganizers(validIds, 0, new java.util.ArrayList<>(), new java.util.ArrayList<>(), dialog);
         });
 
         dialog.show();
+    }
+
+    private void processMultipleOrganizers(java.util.List<String> studentIds, int index, 
+                                          java.util.List<String> successList, java.util.List<String> failList, 
+                                          android.app.Dialog dialog) {
+        if (index >= studentIds.size()) {
+            // Processing done
+            android.widget.ProgressBar pbSearchLoading = dialog.findViewById(R.id.pbSearchLoading);
+            android.widget.TextView tvStatusMessage = dialog.findViewById(R.id.tvStatusMessage);
+            android.widget.EditText etStudentId = dialog.findViewById(R.id.etStudentId);
+            android.view.View btnAdd = dialog.findViewById(R.id.btnAddOrganizer);
+            android.view.View btnCancel = dialog.findViewById(R.id.btnCancelOrganizer);
+
+            if (pbSearchLoading != null) pbSearchLoading.setVisibility(android.view.View.GONE);
+            if (tvStatusMessage != null) {
+                String summary = "Hoàn thành! Thành công: " + successList.size() + ", Lỗi: " + failList.size();
+                tvStatusMessage.setText(summary);
+                if (!failList.isEmpty()) {
+                    tvStatusMessage.append("\nChi tiết lỗi: " + String.join(", ", failList));
+                    if (etStudentId != null) {
+                        etStudentId.setEnabled(true);
+                        // Reset field to only contain failed ones so user can retry
+                        etStudentId.setText(String.join(", ", failList).replaceAll(" \\(.*?\\)", ""));
+                    }
+                    if (btnAdd != null) btnAdd.setEnabled(true);
+                    if (btnCancel != null) btnCancel.setEnabled(true);
+                    
+                    if (!successList.isEmpty()) loadOrganizersData();
+                } else {
+                    Toast.makeText(this, "Đã thêm thành công tất cả", Toast.LENGTH_SHORT).show();
+                    loadOrganizersData();
+                    dialog.dismiss();
+                }
+            }
+            return;
+        }
+
+        String currentMssv = studentIds.get(index);
+        android.widget.TextView tvStatusMessage = dialog.findViewById(R.id.tvStatusMessage);
+        if (tvStatusMessage != null) {
+            tvStatusMessage.setText("Đang tìm " + currentMssv + " (" + (index+1) + "/" + studentIds.size() + ")");
+        }
+
+        // Step 1: Search by MSSV
+        ApiClient.student(this).searchStudents(currentMssv, 0, 10).enqueue(new Callback<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>> call, Response<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus() 
+                        && response.body().getData() != null && response.body().getData().content != null) {
+                    
+                    java.util.List<com.example.campuslife.entity.Student> results = response.body().getData().content;
+                    com.example.campuslife.entity.Student targetStudent = null;
+                    
+                    // Strictly match studentCode ignoring case
+                    for (com.example.campuslife.entity.Student s : results) {
+                        if (s.getStudentCode() != null && s.getStudentCode().equalsIgnoreCase(currentMssv)) {
+                            targetStudent = s;
+                            break;
+                        }
+                    }
+                    
+                    if (targetStudent == null && !results.isEmpty()) {
+                        // Fallback to first if strict match fails but results exist
+                        targetStudent = results.get(0);
+                    }
+
+                    if (targetStudent != null) {
+                        if (tvStatusMessage != null) tvStatusMessage.setText("Đang thêm " + targetStudent.getStudentCode() + "...");
+                        // Step 2: Add Organizer
+                        ApiClient.preparation(AdminPreparationDashboardActivity.this).addOrganizer(activityId, targetStudent.getId()).enqueue(new Callback<ApiResponse<Object>>() {
+                            @Override
+                            public void onResponse(Call<ApiResponse<Object>> call, Response<ApiResponse<Object>> res) {
+                                if (res.isSuccessful() && res.body() != null && res.body().isStatus()) {
+                                    successList.add(currentMssv);
+                                } else {
+                                    String err = res.body() != null && res.body().getMessage() != null ? res.body().getMessage() : "Lỗi thêm";
+                                    failList.add(currentMssv + " (" + err + ")");
+                                }
+                                processMultipleOrganizers(studentIds, index + 1, successList, failList, dialog);
+                            }
+
+                            @Override
+                            public void onFailure(Call<ApiResponse<Object>> call, Throwable t) {
+                                failList.add(currentMssv + " (Mất kết nối)");
+                                processMultipleOrganizers(studentIds, index + 1, successList, failList, dialog);
+                            }
+                        });
+                    } else {
+                        // Not found
+                        failList.add(currentMssv + " (Không tìm thấy)");
+                        processMultipleOrganizers(studentIds, index + 1, successList, failList, dialog);
+                    }
+                } else {
+                    failList.add(currentMssv + " (Lỗi Server)");
+                    processMultipleOrganizers(studentIds, index + 1, successList, failList, dialog);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.campuslife.api.StudentApi.StudentSearchResponse>> call, Throwable t) {
+                failList.add(currentMssv + " (Lỗi mạng)");
+                processMultipleOrganizers(studentIds, index + 1, successList, failList, dialog);
+            }
+        });
     }
 
     private void showAssignTaskDialog() {
@@ -476,6 +867,7 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         android.widget.EditText etTaskAssigneeId = view.findViewById(R.id.etTaskAssigneeId);
         android.widget.EditText etTaskDescription = view.findViewById(R.id.etTaskDescription);
         android.widget.EditText etTaskDeadline = view.findViewById(R.id.etTaskDeadline);
+        android.widget.CheckBox cbIsFinancial = view.findViewById(R.id.cbIsFinancial);
 
         etTaskAssigneeId.setFocusable(false);
         etTaskAssigneeId.setClickable(true);
@@ -534,7 +926,8 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                             selectedAssigneeId, 
                             etTaskTitle.getText().toString(), 
                             etTaskDescription.getText().toString(), 
-                            formattedDeadline))
+                            formattedDeadline,
+                            cbIsFinancial.isChecked()))
                     .enqueue(new Callback<ApiResponse<PreparationTaskDto>>() {
                         @Override
                         public void onResponse(Call<ApiResponse<PreparationTaskDto>> call, Response<ApiResponse<PreparationTaskDto>> response) {

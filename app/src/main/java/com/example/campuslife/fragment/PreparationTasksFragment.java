@@ -64,8 +64,12 @@ public class PreparationTasksFragment extends Fragment {
         tvEmpty = view.findViewById(R.id.tvEmpty);
         rvTasks = view.findViewById(R.id.rvTasks);
 
-        adapter = new com.example.campuslife.adapter.PreparationTaskAdapter(requireContext(), new java.util.ArrayList<>(), studentId, this::updateStatus);
-
+        adapter = new com.example.campuslife.adapter.PreparationTaskAdapter(requireContext(), new java.util.ArrayList<>(), studentId, task -> {
+            com.example.campuslife.utils.PreparationTaskDetailManager manager = new com.example.campuslife.utils.PreparationTaskDetailManager(
+                requireContext(), activityId, studentId, task, this::load
+            );
+            manager.show();
+        });
         rvTasks.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         rvTasks.setAdapter(adapter);
 
