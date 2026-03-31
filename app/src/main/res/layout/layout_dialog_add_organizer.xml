@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Thêm thành viên tổ chức"
+        android:text="Thêm thành viên"
         android:textColor="#111827"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -59,15 +59,26 @@
             android:textColor="#111827" 
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
-    
+
     <ProgressBar
         android:id="@+id/pbSearchLoading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="16dp"
-        android:indeterminateTint="#001C44"
+        android:indeterminateTint="#f76b10"
         android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvStatusMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:text="..."
+        android:textColor="#f76b10"
+        android:textStyle="bold"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/tvNoSearchRes"
@@ -84,7 +95,7 @@
         android:layout_width="match_parent"
         android:layout_height="240dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/bg_border_gray"
+        android:background="#fefefe"
         android:scrollbars="vertical"
         android:visibility="gone">
         <LinearLayout
@@ -97,8 +108,8 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Thành viên này sẽ có quyền truy cập vào dashboard sự kiện."
+        android:layout_marginTop="16dp"
+        android:text="Cho phép nhập nhiều mã sinh viên, cách nhau bởi phẩy (,) hoặc khoảng trắng."
         android:textStyle="italic"
         android:textColor="#9CA3AF"
         android:textSize="13sp" />
@@ -121,7 +132,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="12dp"
-            android:text="Hãy đảm bảo mã số sinh viên chính xác để cấp quyền quản trị cho đúng người."
+            android:text="Các thành viên này sẽ có quyền quản trị dashboard sự kiện."
             android:textColor="#6B7280"
             android:textSize="13sp" />
     </LinearLayout>
@@ -157,7 +168,7 @@
             android:text="Thêm"
             android:textStyle="bold"
             android:textColor="@color/white"
-            app:backgroundTint="#EAA775"
+            app:backgroundTint="#f76b10"
             app:cornerRadius="12dp" />
     </LinearLayout>
 </LinearLayout>

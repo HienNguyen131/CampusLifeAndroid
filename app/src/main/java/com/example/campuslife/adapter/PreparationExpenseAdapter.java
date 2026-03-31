@@ -32,11 +32,19 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
 
     private final Context context;
     private final List<ExpenseDto> list;
+    private final boolean isHistoryMode;
     private final DecimalFormat df = new DecimalFormat("#,###");
+    private OnExpenseDecisionListener listener;
 
-    public PreparationExpenseAdapter(Context context, List<ExpenseDto> list) {
+    public interface OnExpenseDecisionListener {
+        void onDecisionMade();
+    }
+
+    public PreparationExpenseAdapter(Context context, List<ExpenseDto> list, boolean isHistoryMode, OnExpenseDecisionListener listener) {
         this.context = context;
         this.list = list;
+        this.isHistoryMode = isHistoryMode;
+        this.listener = listener;
     }
 
     @NonNull
@@ -50,17 +58,31 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ExpenseDto expense = list.get(position);
 
-        holder.tvExpenseDesc.setText(expense.description != null ? expense.description : "No Description");
-        holder.tvReportedBy.setText(expense.reportedByName != null ? "Reported by " + expense.reportedByName : "Reported by Unknown");
+        holder.tvDescription.setText(expense.description != null ? expense.description : "No Description");
+        holder.tvCreatedByName.setText(expense.createdByName != null ? "Người báo cáo: " + expense.createdByName : "Người báo cáo: Chưa rõ");
+        
+        if (expense.categoryName == null || expense.categoryName.isEmpty()) {
+            holder.tvCategoryName.setVisibility(View.GONE);
+        } else {
+            holder.tvCategoryName.setVisibility(View.VISIBLE);
+            holder.tvCategoryName.setText(expense.categoryName);
+        }
+        
+        if (expense.taskName == null || expense.taskName.isEmpty()) {
+            holder.tvTaskName.setVisibility(View.GONE);
+        } else {
+            holder.tvTaskName.setVisibility(View.VISIBLE);
+            holder.tvTaskName.setText(expense.taskName);
+        }
 
         if (expense.amount != null) {
             try {
-                holder.tvAmount.setText(df.format(Double.parseDouble(expense.amount)) + " VNĐ");
+                holder.tvAmount.setText(df.format(Double.parseDouble(expense.amount)) + " đ");
             } catch (Exception e) {
-                holder.tvAmount.setText(expense.amount + " VNĐ");
+                holder.tvAmount.setText(expense.amount + " đ");
             }
         } else {
-            holder.tvAmount.setText("0 VNĐ");
+            holder.tvAmount.setText("0 đ");
         }
 
         // Image loading
@@ -86,39 +108,56 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
             holder.ivEvidence.setImageResource(R.drawable.ic_placeholder_transparent);
         }
 
-        // Approval button logic
-        if (expense.approved == null) {
-            holder.llActions.setVisibility(View.VISIBLE);
-            holder.tvStatus.setVisibility(View.GONE);
+        // Action vs Badge toggling
+        if (!isHistoryMode) {
+            holder.layoutActions.setVisibility(View.VISIBLE);
+            holder.tvStatusBadge.setVisibility(View.GONE);
             
             holder.btnApprove.setOnClickListener(v -> handleApproval(holder, position, expense, true));
             holder.btnReject.setOnClickListener(v -> handleApproval(holder, position, expense, false));
-        } else if (expense.approved) {
-            holder.llActions.setVisibility(View.GONE);
-            holder.tvStatus.setVisibility(View.VISIBLE);
-            holder.tvStatus.setText("Đã duyệt");
-            holder.tvStatus.setTextColor(Color.parseColor("#065F46"));
-            holder.tvStatus.setBackgroundResource(R.drawable.bg_squircle_green);
         } else {
-            holder.llActions.setVisibility(View.GONE);
-            holder.tvStatus.setVisibility(View.VISIBLE);
-            holder.tvStatus.setText("Từ chối");
-            holder.tvStatus.setTextColor(Color.parseColor("#991B1B"));
-            holder.tvStatus.setBackgroundResource(R.drawable.bg_squircle_red);
+            holder.layoutActions.setVisibility(View.GONE);
+            holder.tvStatusBadge.setVisibility(View.VISIBLE);
+            
+            if ("APPROVED".equals(expense.status)) {
+                holder.tvStatusBadge.setText("ĐÃ DUYỆT");
+                holder.tvStatusBadge.setTextColor(Color.parseColor("#10B981"));
+                holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_squircle_green);
+            } else {
+                holder.tvStatusBadge.setText("TỪ CHỐI");
+                holder.tvStatusBadge.setTextColor(Color.parseColor("#EF4444"));
+                holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_squircle_red);
+            }
         }
     }
 
     private void handleApproval(ViewHolder holder, int position, ExpenseDto expense, boolean isApproved) {
-        ApiClient.preparation(context).approveExpense(expense.id, new ApproveExpenseRequest(isApproved))
-                .enqueue(new Callback<ApiResponse<ExpenseDto>>() {
+        Call<ApiResponse<ExpenseDto>> apiCall;
+        if (expense.status == null || "PENDING_LEADER".equals(expense.status)) {
+            apiCall = ApiClient.preparation(context).leaderDecisionExpense(expense.id, new ApproveExpenseRequest(isApproved));
+        } else {
+            apiCall = ApiClient.preparation(context).adminDecisionExpense(expense.id, new ApproveExpenseRequest(isApproved));
+        }
+        apiCall.enqueue(new Callback<ApiResponse<ExpenseDto>>() {
                     @Override
                     public void onResponse(Call<ApiResponse<ExpenseDto>> call, Response<ApiResponse<ExpenseDto>> response) {
                         if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                            expense.approved = isApproved;
-                            notifyItemChanged(position);
                             Toast.makeText(context, isApproved ? "Đã duyệt" : "Đã từ chối", Toast.LENGTH_SHORT).show();
+                            if (listener != null) {
+                                listener.onDecisionMade();
+                            }
                         } else {
-                            Toast.makeText(context, "Thao tác thất bại", Toast.LENGTH_SHORT).show();
+                            String errMessage = "Thao tác thất bại";
+                            if (response.errorBody() != null) {
+                                try {
+                                    String json = response.errorBody().string();
+                                    org.json.JSONObject obj = new org.json.JSONObject(json);
+                                    if (obj.has("message")) errMessage = obj.getString("message");
+                                } catch (Exception e) {}
+                            } else if (response.body() != null && response.body().getMessage() != null) {
+                                errMessage = response.body().getMessage();
+                            }
+                            Toast.makeText(context, errMessage, Toast.LENGTH_LONG).show();
                         }
                     }
 
@@ -136,18 +175,20 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ShapeableImageView ivEvidence;
-        TextView tvExpenseDesc, tvReportedBy, tvAmount, tvStatus;
-        View llActions;
+        TextView tvDescription, tvCreatedByName, tvAmount, tvStatusBadge, tvCategoryName, tvTaskName;
+        View layoutActions;
         MaterialButton btnApprove, btnReject;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ivEvidence = itemView.findViewById(R.id.ivEvidence);
-            tvExpenseDesc = itemView.findViewById(R.id.tvExpenseDesc);
-            tvReportedBy = itemView.findViewById(R.id.tvReportedBy);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
+            tvCreatedByName = itemView.findViewById(R.id.tvCreatedByName);
             tvAmount = itemView.findViewById(R.id.tvAmount);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
-            llActions = itemView.findViewById(R.id.llActions);
+            tvCategoryName = itemView.findViewById(R.id.tvCategoryName);
+            tvTaskName = itemView.findViewById(R.id.tvTaskName);
+            tvStatusBadge = itemView.findViewById(R.id.tvStatusBadge);
+            layoutActions = itemView.findViewById(R.id.layoutActions);
             btnApprove = itemView.findViewById(R.id.btnApprove);
             btnReject = itemView.findViewById(R.id.btnReject);
         }

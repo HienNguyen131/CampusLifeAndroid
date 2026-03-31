@@ -155,7 +155,7 @@ public class StudentPreparationDetailActivity extends AppCompatActivity {
                             return;
                         }
                         PreparationDashboardDto d = resp.body().getData();
-                        showFinance = d != null && d.budget != null;
+                        showFinance = d != null && d.activityBudget != null;
                         maybeSetupPager();
                     }
 

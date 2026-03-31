@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet_rounded_24"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <!-- Drag Handle -->
+    <View
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:background="#E5E7EB" />
+
+    <!-- Title & Close -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Duyệt Cấp Bù"
+            android:textColor="@color/text_dark"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+        <ImageButton
+            android:id="@+id/btnClose"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_close"
+            app:tint="@color/text_muted" />
+    </RelativeLayout>
+
+    <!-- MODE TOGGLE (Custom RadioGroup Style) -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginBottom="24dp"
+        app:cardBackgroundColor="#F1F5F9"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp">
+        
+        <RadioGroup
+            android:id="@+id/rgApprovalMode"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:padding="4dp">
+            
+            <RadioButton
+                android:id="@+id/rbAutoSplit"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_toggle_tab"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="Gợi ý Auto-Split"
+                android:textColor="@color/selector_toggle_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <RadioButton
+                android:id="@+id/rbManual"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/selector_toggle_tab"
+                android:button="@null"
+                android:gravity="center"
+                android:text="Chọn thủ công"
+                android:textColor="@color/selector_toggle_text"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+        </RadioGroup>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- REQUEST DETAILS SECTION -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableStart="@drawable/ic_document"
+        android:drawablePadding="8dp"
+        android:text="CHI TIẾT YÊU CẦU"
+        android:textColor="#92400E"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:letterSpacing="0.05"
+        android:layout_marginBottom="12dp" />
+
+    <TextView
+        android:id="@+id/tvDetailReason"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_reason_bordered"
+        android:padding="20dp"
+        android:text="Chi phí phát sinh do số lượng đại biểu tăng 20% so với dự kiến ban đầu. Cần thêm ngân sách để đặt thêm Teabreak."
+        android:textColor="@color/text_dark"
+        android:textSize="14sp"
+        android:lineSpacingExtra="5dp"
+        android:layout_marginBottom="24dp" />
+
+    <!-- CONTAINER FOR DYNAMIC MODES -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Mode A: Auto Split (rvSourcePlan) -->
+        <LinearLayout
+            android:id="@+id/layoutAutoSplit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+            
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nguồn Đề Xuất"
+                    android:textColor="@color/text_dark"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/bg_pill_orange"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="4dp"
+                    android:text="AI GỢI Ý"
+                    android:textColor="#FFFFFF"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSourcePlan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="160dp"
+                android:nestedScrollingEnabled="true" />
+        </LinearLayout>
+
+        <!-- Mode B: Manual Selection (Spinner) -->
+        <LinearLayout
+            android:id="@+id/layoutManualSelect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nhập số tiền rút từ từng ví"
+                android:textColor="@color/text_dark"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:fadeScrollbars="false"
+                android:scrollbars="vertical">
+                
+                <LinearLayout
+                    android:id="@+id/containerManualWallets"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/btnAddWalletRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Thêm ví"
+                android:textColor="#2563EB"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:paddingTop="12dp"
+                android:layout_gravity="center_horizontal" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+    <!-- ACTION BUTTONS -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApproveSplit"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:text="Phê Duyệt Đơn"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="#A63F00"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_check_circle"
+            app:iconGravity="textStart" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRejectAdj"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:layout_marginTop="12dp"
+            android:text="Từ Chối"
+            android:textAllCaps="false"
+            android:textColor="#EF4444"
+            android:textStyle="bold"
+            app:strokeColor="#FEE2E2"
+            app:cornerRadius="16dp"
+            app:icon="@drawable/ic_close"
+            app:iconGravity="textStart"
+            app:iconTint="#EF4444" />
+    </LinearLayout>
+
+</LinearLayout>
