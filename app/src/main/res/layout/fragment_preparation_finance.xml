@@ -50,8 +50,32 @@
                 android:textColor="@android:color/black"
                 android:textSize="13sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDebt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Tiền mặt chưa hoàn: 0đ (Xem chi tiết)"
+                android:textColor="#EA580C"
+                android:textSize="13sp"
+                android:textStyle="italic"
+                android:visibility="gone" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewAllocationAdj"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="12dp"
+        android:text="Quản lý Cấp Bù"
+        android:textColor="@color/primary"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardSummary" />
 
     <Spinner
         android:id="@+id/spFilter"
@@ -59,8 +83,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginEnd="12dp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toStartOf="@id/btnViewAllocationAdj"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardSummary" />
 

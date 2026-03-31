@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Spinner;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,7 +49,12 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     private List<com.example.campuslife.entity.preparation.BudgetCategoryDto> adminWalletList;
     
     // RecyclerViews
-    private RecyclerView rvOrganizers, rvTasks, rvExpenses;
+    private RecyclerView rvOrganizers, rvTasks, rvPendingExpenses, rvHistoryExpenses;
+    private RecyclerView rvAllocationRequests, rvFundAdvances, rvFundAdvanceDebts;
+    
+    // Expense Views
+    private TextView tvPendingExpensesCount;
+    private Spinner spPendingExpenseFilter, spHistoryExpenseFilter;
     
     // Adapters & Data
     private PreparationOrganizerAdapter organizerAdapter;
@@ -56,9 +62,21 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     
     private PreparationTaskAdapter taskAdapter;
     private List<PreparationTaskDto> taskList;
+
+    private com.example.campuslife.adapter.AllocationAdjustmentAdapter allocationAdjustmentAdapter;
+    private List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto> allocationAdjustmentList;
+
+    private com.example.campuslife.adapter.FundAdvanceAdapter fundAdvanceAdapter;
+    private List<com.example.campuslife.entity.preparation.FundAdvanceDto> fundAdvanceList;
+
+    private com.example.campuslife.adapter.FundAdvanceDebtAdapter fundAdvanceDebtAdapter;
+    private List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto> fundAdvanceDebtList;
     
-    private PreparationExpenseAdapter expenseAdapter;
-    private List<ExpenseDto> expenseList;
+    private PreparationExpenseAdapter pendingExpenseAdapter;
+    private List<ExpenseDto> pendingExpenseList;
+    
+    private PreparationExpenseAdapter historyExpenseAdapter;
+    private List<ExpenseDto> historyExpenseList;
     
     private final DecimalFormat df = new DecimalFormat("#,###");
     private Long selectedAssigneeId = null;
@@ -102,7 +120,15 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         
         rvOrganizers = findViewById(R.id.rvOrganizers);
         rvTasks = findViewById(R.id.rvTasks);
-        rvExpenses = findViewById(R.id.rvExpenses);
+        rvAllocationRequests = findViewById(R.id.rvAllocationRequests);
+        rvFundAdvances = findViewById(R.id.rvFundAdvances);
+        rvFundAdvanceDebts = findViewById(R.id.rvFundAdvanceDebts);
+        
+        rvPendingExpenses = findViewById(R.id.rvPendingExpenses);
+        rvHistoryExpenses = findViewById(R.id.rvHistoryExpenses);
+        tvPendingExpensesCount = findViewById(R.id.tvPendingExpensesCount);
+        spPendingExpenseFilter = findViewById(R.id.spPendingExpenseFilter);
+        spHistoryExpenseFilter = findViewById(R.id.spHistoryExpenseFilter);
         
         layoutBudgetFull = findViewById(R.id.layoutBudgetFull);
         layoutEmptyBudget = findViewById(R.id.layoutEmptyBudget);
@@ -160,10 +186,36 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         rvTasks.setLayoutManager(new LinearLayoutManager(this));
         rvTasks.setAdapter(taskAdapter);
         
-        expenseList = new ArrayList<>();
-        expenseAdapter = new PreparationExpenseAdapter(this, expenseList);
-        rvExpenses.setLayoutManager(new LinearLayoutManager(this));
-        rvExpenses.setAdapter(expenseAdapter);
+        pendingExpenseList = new ArrayList<>();
+        pendingExpenseAdapter = new PreparationExpenseAdapter(this, pendingExpenseList, false, this::loadExpensesData);
+        rvPendingExpenses.setLayoutManager(new LinearLayoutManager(this));
+        rvPendingExpenses.setAdapter(pendingExpenseAdapter);
+        
+        historyExpenseList = new ArrayList<>();
+        historyExpenseAdapter = new PreparationExpenseAdapter(this, historyExpenseList, true, this::loadExpensesData);
+        rvHistoryExpenses.setLayoutManager(new LinearLayoutManager(this));
+        rvHistoryExpenses.setAdapter(historyExpenseAdapter);
+
+        if (rvAllocationRequests != null) {
+            allocationAdjustmentList = new ArrayList<>();
+            allocationAdjustmentAdapter = new com.example.campuslife.adapter.AllocationAdjustmentAdapter(this, allocationAdjustmentList, true, activityId);
+            rvAllocationRequests.setLayoutManager(new LinearLayoutManager(this));
+            rvAllocationRequests.setAdapter(allocationAdjustmentAdapter);
+        }
+
+        if (rvFundAdvances != null) {
+            fundAdvanceList = new ArrayList<>();
+            fundAdvanceAdapter = new com.example.campuslife.adapter.FundAdvanceAdapter(this, fundAdvanceList, true);
+            rvFundAdvances.setLayoutManager(new LinearLayoutManager(this));
+            rvFundAdvances.setAdapter(fundAdvanceAdapter);
+        }
+
+        if (rvFundAdvanceDebts != null) {
+            fundAdvanceDebtList = new ArrayList<>();
+            fundAdvanceDebtAdapter = new com.example.campuslife.adapter.FundAdvanceDebtAdapter(this, fundAdvanceDebtList);
+            rvFundAdvanceDebts.setLayoutManager(new LinearLayoutManager(this));
+            rvFundAdvanceDebts.setAdapter(fundAdvanceDebtAdapter);
+        }
     }
 
     private void loadDashboardData() {
@@ -244,6 +296,10 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                             taskList.addAll(dto.tasks);
                         }
                         taskAdapter.notifyDataSetChanged();
+
+                        loadAllocationAdjustments();
+                        loadFundAdvances();
+                        loadFundAdvanceDebts();
                     }
                 } else {
                     if (response.code() == 400 || response.code() == 403) {
@@ -456,22 +512,140 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     }
 
     private void loadExpensesData() {
-        ApiClient.preparation(this).listExpenses(activityId, "ALL").enqueue(new Callback<ApiResponse<List<ExpenseDto>>>() {
+        ApiClient.preparation(this).listExpenses(activityId, null).enqueue(new Callback<ApiResponse<List<ExpenseDto>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<ExpenseDto>>> call, Response<ApiResponse<List<ExpenseDto>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     List<ExpenseDto> data = response.body().getData();
-                    expenseList.clear();
+                    pendingExpenseList.clear();
+                    historyExpenseList.clear();
+                    
                     if (data != null && !data.isEmpty()) {
-                        expenseList.addAll(data);
+                        for (ExpenseDto expense : data) {
+                            if (expense.status != null && expense.status.contains("PENDING")) {
+                                pendingExpenseList.add(expense);
+                            } else {
+                                historyExpenseList.add(expense);
+                            }
+                        }
                     }
-                    expenseAdapter.notifyDataSetChanged();
+                    
+                    if (tvPendingExpensesCount != null) {
+                        tvPendingExpensesCount.setText("Có " + pendingExpenseList.size() + " chi phí chờ duyệt");
+                    }
+                    if (pendingExpenseAdapter != null) pendingExpenseAdapter.notifyDataSetChanged();
+                    if (historyExpenseAdapter != null) historyExpenseAdapter.notifyDataSetChanged();
                 }
             }
 
             @Override
             public void onFailure(Call<ApiResponse<List<ExpenseDto>>> call, Throwable t) {}
         });
+    }
+
+    private void loadAllocationAdjustments() {
+        ApiClient.preparation(this).listAllocationAdjustments(activityId).enqueue(new Callback<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> call, Response<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus() && response.body().getData() != null) {
+                    if (allocationAdjustmentList != null) {
+                        allocationAdjustmentList.clear();
+                        allocationAdjustmentList.addAll(response.body().getData());
+                        if (allocationAdjustmentAdapter != null) allocationAdjustmentAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> call, Throwable t) {}
+        });
+    }
+
+    private void loadFundAdvanceDebts() {
+        ApiClient.preparation(this).listFundAdvanceDebts(activityId, null).enqueue(new Callback<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>> call, Response<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus() && response.body().getData() != null) {
+                    if (fundAdvanceDebtList != null) {
+                        fundAdvanceDebtList.clear();
+                        fundAdvanceDebtList.addAll(response.body().getData());
+                        
+                        if (fundAdvanceDebtAdapter != null) fundAdvanceDebtAdapter.notifyDataSetChanged();
+
+                        if (fundAdvanceAdapter != null) {
+                            java.util.Map<Long, Double> debtMap = new java.util.HashMap<>();
+                            for (com.example.campuslife.entity.preparation.FundAdvanceDebtDto debt : fundAdvanceDebtList) {
+                                if (debt.studentId != null && debt.holdingAmount != null) {
+                                    try {
+                                        debtMap.put(debt.studentId, Double.parseDouble(debt.holdingAmount));
+                                    } catch (Exception e) {}
+                                }
+                            }
+                            fundAdvanceAdapter.setDebtMap(debtMap);
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>> call, Throwable t) {}
+        });
+    }
+
+    private void loadFundAdvances() {
+        if (taskList == null || taskList.isEmpty()) return;
+        
+        List<com.example.campuslife.entity.preparation.FundAdvanceDto> mergedAdvances = new ArrayList<>();
+        java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger();
+        
+        // Find financial tasks
+        List<PreparationTaskDto> financialTasks = new ArrayList<>();
+        for (PreparationTaskDto t : taskList) {
+            if (Boolean.TRUE.equals(t.isFinancial)) {
+                financialTasks.add(t);
+            }
+        }
+        
+        if (financialTasks.isEmpty()) {
+            if (fundAdvanceList != null) {
+                fundAdvanceList.clear();
+                if (fundAdvanceAdapter != null) fundAdvanceAdapter.notifyDataSetChanged();
+            }
+            return;
+        }
+
+        for (PreparationTaskDto t : financialTasks) {
+            ApiClient.preparation(this).listFundAdvances(t.id).enqueue(new Callback<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDto>>>() {
+                @Override
+                public void onResponse(Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDto>>> call, Response<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDto>>> response) {
+                    if (response.isSuccessful() && response.body() != null && response.body().isStatus() && response.body().getData() != null) {
+                        synchronized (mergedAdvances) {
+                            mergedAdvances.addAll(response.body().getData());
+                        }
+                    }
+                    if (counter.incrementAndGet() == financialTasks.size()) {
+                        runOnUiThread(() -> {
+                            if (fundAdvanceList != null) {
+                                fundAdvanceList.clear();
+                                fundAdvanceList.addAll(mergedAdvances);
+                                if (fundAdvanceAdapter != null) fundAdvanceAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDto>>> call, Throwable t) {
+                    if (counter.incrementAndGet() == financialTasks.size()) {
+                        runOnUiThread(() -> {
+                            if (fundAdvanceList != null) {
+                                fundAdvanceList.clear();
+                                fundAdvanceList.addAll(mergedAdvances);
+                                if (fundAdvanceAdapter != null) fundAdvanceAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                }
+            });
+        }
     }
 
     private void setupFabListener() {
@@ -555,8 +729,23 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         findViewById(R.id.layoutTasksHeader).setVisibility(showAll || position == 3 ? android.view.View.VISIBLE : android.view.View.GONE);
         findViewById(R.id.rvTasks).setVisibility(showAll || position == 3 ? android.view.View.VISIBLE : android.view.View.GONE);
         
+        android.view.View layoutAllocation = findViewById(R.id.layoutAllocationRoot);
+        if (layoutAllocation != null) layoutAllocation.setVisibility(position == 3 ? android.view.View.VISIBLE : android.view.View.GONE);
+        
+        android.view.View layoutFundAdvance = findViewById(R.id.layoutFundAdvanceRoot);
+        if (layoutFundAdvance != null) layoutFundAdvance.setVisibility(position == 3 ? android.view.View.VISIBLE : android.view.View.GONE);
+        
+        android.view.View layoutDebt = findViewById(R.id.layoutFundAdvanceDebtRoot);
+        if (layoutDebt != null) layoutDebt.setVisibility(position == 3 ? android.view.View.VISIBLE : android.view.View.GONE);
+        
         findViewById(R.id.layoutExpensesHeader).setVisibility(showAll || position == 4 ? android.view.View.VISIBLE : android.view.View.GONE);
-        findViewById(R.id.rvExpenses).setVisibility(showAll || position == 4 ? android.view.View.VISIBLE : android.view.View.GONE);
+        findViewById(R.id.layoutExpensesRoot).setVisibility(showAll || position == 4 ? android.view.View.VISIBLE : android.view.View.GONE);
+        
+        android.view.View historyHeader = findViewById(R.id.layoutHistoryExpensesHeader);
+        if (historyHeader != null) historyHeader.setVisibility(position == 4 ? android.view.View.VISIBLE : android.view.View.GONE);
+        
+        android.view.View rvHistory = findViewById(R.id.rvHistoryExpenses);
+        if (rvHistory != null) rvHistory.setVisibility(position == 4 ? android.view.View.VISIBLE : android.view.View.GONE);
     }
 
     private void showUpdateBudgetDialog() {

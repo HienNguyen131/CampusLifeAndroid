@@ -9,9 +9,13 @@ public class FundAdvanceDto implements Serializable {
     public String taskTitle;
     public Long studentId;
     public String studentName;
+    public Long requestedById;
+    public String requestedByName;
     public Long categoryId;
     public String categoryName;
     public BigDecimal amount;
     public BigDecimal remainingAmount;
     public String status;
+    public String createdAt;
+    public String decidedAt;
 }

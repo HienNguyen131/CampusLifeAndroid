@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.campuslife.R;
+import com.example.campuslife.adapter.FundAdvanceAdapter;
 import com.example.campuslife.adapter.PreparationTaskMemberAdapter;
 import com.example.campuslife.api.ApiClient;
 import com.example.campuslife.api.ApiResponse;
@@ -24,6 +25,7 @@ import com.example.campuslife.entity.preparation.AllocateTaskAmountRequest;
 import com.example.campuslife.entity.preparation.ApproveTaskCompletionRequest;
 import com.example.campuslife.entity.preparation.BudgetCategoryDto;
 import com.example.campuslife.entity.preparation.CreateFundAdvanceRequest;
+import com.example.campuslife.entity.preparation.FundAdvanceDto;
 import com.example.campuslife.entity.preparation.FundAdvanceSourceSuggestionDto;
 import com.example.campuslife.entity.preparation.OrganizerDto;
 import com.example.campuslife.entity.preparation.PreparationTaskDto;
@@ -158,6 +160,7 @@ public class PreparationTaskDetailManager {
             llFinanceSection.setVisibility(View.VISIBLE);
             TextView tvAllocatedAmount = view.findViewById(R.id.tvAllocatedAmount);
             MaterialButton btnAllocate = view.findViewById(R.id.btnAllocate);
+            MaterialButton btnViewFundAdvances = view.findViewById(R.id.btnViewFundAdvances);
             
             String formattedAllocated = task.allocatedAmount != null ? String.format("%,dđ", task.allocatedAmount.longValue()) : "0đ";
             tvAllocatedAmount.setText(formattedAllocated);
@@ -165,8 +168,16 @@ public class PreparationTaskDetailManager {
             if (isAdmin) {
                 btnAllocate.setVisibility(View.VISIBLE);
                 btnAllocate.setOnClickListener(v -> showAllocateDialog());
+                
+                if (btnViewFundAdvances != null) {
+                    btnViewFundAdvances.setVisibility(View.VISIBLE);
+                    btnViewFundAdvances.setOnClickListener(v -> showFundAdvancesListDialog(isAdmin));
+                }
             } else {
                 btnAllocate.setVisibility(View.GONE);
+                if (btnViewFundAdvances != null) {
+                    btnViewFundAdvances.setVisibility(View.GONE);
+                }
             }
         } else {
             llFinanceSection.setVisibility(View.GONE);
@@ -233,12 +244,20 @@ public class PreparationTaskDetailManager {
 
         if (!isAdmin && Boolean.TRUE.equals(task.isFinancial) && detailDialog != null) {
             MaterialButton btnFundAdvance = detailDialog.findViewById(R.id.btnFundAdvance);
+            MaterialButton btnViewFundAdvances = detailDialog.findViewById(R.id.btnViewFundAdvances);
             if (btnFundAdvance != null) {
                 if (isLeader) {
                     btnFundAdvance.setVisibility(View.VISIBLE);
                     btnFundAdvance.setOnClickListener(v -> showFundAdvanceDialog());
+                    if (btnViewFundAdvances != null) {
+                        btnViewFundAdvances.setVisibility(View.VISIBLE);
+                        btnViewFundAdvances.setOnClickListener(v -> showFundAdvancesListDialog(isAdmin));
+                    }
                 } else {
                     btnFundAdvance.setVisibility(View.GONE);
+                    if (btnViewFundAdvances != null) {
+                        btnViewFundAdvances.setVisibility(View.GONE);
+                    }
                 }
             }
         }
@@ -248,7 +267,7 @@ public class PreparationTaskDetailManager {
         if ("PENDING".equals(status)) {
             if (isOwner || isMember) {
                 btnPrimary.setVisibility(View.VISIBLE);
-                btnPrimary.setText("Nhận việc");
+                btnPrimary.setText(isOwner ? "Nhận việc" : "Xin tham gia");
                 btnPrimary.setOnClickListener(v -> {
                     ApiClient.preparation(context).acceptTask(task.id).enqueue(new StatusCallback());
                 });
@@ -583,7 +602,34 @@ public class PreparationTaskDetailManager {
         advanceDialog.show();
     }
 
-    // ========== ALLOCATE BUDGET (ADMIN) ==========
+    private void showFundAdvancesListDialog(boolean isAdmin) {
+        BottomSheetDialog bsDialog = new BottomSheetDialog(context, R.style.BottomSheetDialogTheme);
+        View view = LayoutInflater.from(context).inflate(R.layout.layout_bottom_sheet_fund_advances, null);
+        bsDialog.setContentView(view);
+        
+        RecyclerView rv = view.findViewById(R.id.rvFundAdvances);
+        rv.setLayoutManager(new LinearLayoutManager(context));
+        
+        ApiClient.preparation(context).listFundAdvances(task.id).enqueue(new Callback<ApiResponse<List<FundAdvanceDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<FundAdvanceDto>>> call, Response<ApiResponse<List<FundAdvanceDto>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus() && response.body().getData() != null) {
+                    List<FundAdvanceDto> funds = response.body().getData();
+                    FundAdvanceAdapter adapter = new FundAdvanceAdapter(context, funds, isAdmin);
+                    rv.setAdapter(adapter);
+                } else {
+                    Toast.makeText(context, "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<FundAdvanceDto>>> call, Throwable t) {
+                Toast.makeText(context, "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
+        
+        bsDialog.show();
+    }
+
     private void showAllocateDialog() {
         BottomSheetDialog allocateDialog = new BottomSheetDialog(context);
         View view = LayoutInflater.from(context).inflate(R.layout.layout_bottom_sheet_allocate_budget, null);

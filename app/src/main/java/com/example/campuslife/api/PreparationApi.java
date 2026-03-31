@@ -41,8 +41,13 @@ public interface PreparationApi {
     Call<ApiResponse<List<com.example.campuslife.entity.preparation.OrganizerDto>>> getOrganizers(
             @Path("activityId") long activityId);
 
-    @PUT("/api/preparation/expenses/{expenseId}/approval")
-    Call<ApiResponse<ExpenseDto>> approveExpense(
+    @PUT("/api/preparation/expenses/{expenseId}/leader-decision")
+    Call<ApiResponse<ExpenseDto>> leaderDecisionExpense(
+            @Path("expenseId") long expenseId,
+            @Body com.example.campuslife.entity.preparation.ApproveExpenseRequest body);
+
+    @PUT("/api/preparation/expenses/{expenseId}/admin-decision")
+    Call<ApiResponse<ExpenseDto>> adminDecisionExpense(
             @Path("expenseId") long expenseId,
             @Body com.example.campuslife.entity.preparation.ApproveExpenseRequest body);
 
@@ -52,14 +57,14 @@ public interface PreparationApi {
             @Query("status") String status);
 
     @Multipart
-    @POST("/api/preparation/activities/{activityId}/expenses/evidence")
+    @POST("/api/preparation/tasks/{taskId}/expenses/evidence")
     Call<ApiResponse<UploadResultDto>> uploadEvidence(
-            @Path("activityId") long activityId,
+            @Path("taskId") long taskId,
             @Part MultipartBody.Part file);
 
-    @POST("/api/preparation/activities/{activityId}/expenses")
+    @POST("/api/preparation/tasks/{taskId}/expenses")
     Call<ApiResponse<ExpenseDto>> createExpense(
-            @Path("activityId") long activityId,
+            @Path("taskId") long taskId,
             @Body CreateExpenseRequest body);
 
     @POST("/api/preparation/activities/{activityId}/organizers/{studentId}")
@@ -153,4 +158,37 @@ public interface PreparationApi {
     Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceSourceSuggestionDto>>> suggestFundAdvanceSources(
             @Path("taskId") long taskId,
             @Query("amount") String amount);
+
+    @PUT("/api/preparation/fund-advances/{fundAdvanceId}/admin-decision")
+    Call<ApiResponse<com.example.campuslife.entity.preparation.FundAdvanceDto>> adminDecisionFundAdvance(
+            @Path("fundAdvanceId") long fundAdvanceId,
+            @Body com.example.campuslife.entity.preparation.ApproveFundAdvanceRequest body);
+
+    @PUT("/api/preparation/fund-advances/{fundAdvanceId}/return")
+    Call<ApiResponse<com.example.campuslife.entity.preparation.FundAdvanceDto>> adminReturnFundAdvance(
+            @Path("fundAdvanceId") long fundAdvanceId);
+
+    @GET("/api/preparation/activities/{activityId}/fund-advance-debts")
+    Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>> listFundAdvanceDebts(
+            @Path("activityId") long activityId,
+            @Query("studentId") Long studentId);
+
+    // --- Allocation Adjustments ---
+    @GET("/api/preparation/activities/{activityId}/allocation-adjustments")
+    Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> listAllocationAdjustments(
+            @Path("activityId") long activityId);
+
+    @POST("/api/preparation/tasks/{taskId}/allocation-adjustments")
+    Call<ApiResponse<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>> createAllocationAdjustment(
+            @Path("taskId") long taskId,
+            @Body com.example.campuslife.entity.preparation.CreateAllocationAdjustmentRequest request);
+
+    @GET("/api/preparation/allocation-adjustments/{requestId}/source-plan")
+    Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentSourcePlanDto>>> getAllocationAdjustmentSourcePlan(
+            @Path("requestId") long requestId);
+
+    @PUT("/api/preparation/allocation-adjustments/{requestId}/admin-decision")
+    Call<ApiResponse<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>> adminDecisionAllocationAdjustment(
+            @Path("requestId") long requestId,
+            @Body com.example.campuslife.entity.preparation.AdminDecisionAllocationAdjustmentRequest request);
 }
