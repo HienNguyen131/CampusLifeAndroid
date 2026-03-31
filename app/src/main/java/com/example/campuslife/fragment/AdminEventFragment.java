@@ -80,6 +80,7 @@ public class AdminEventFragment extends Fragment {
         }
 
         fetchActivities();
+        applyFilters();
     }
 
     private void setupFilters(View view) {
@@ -137,13 +138,11 @@ public class AdminEventFragment extends Fragment {
             if (!currentStatusFilter.equals("ALL")) {
                 boolean isDraft = (act.isDraft != null && act.isDraft);
                 
-                if (currentStatusFilter.equals("DRAFTS") && !isDraft) {
-                    continue;
-                } else if (!currentStatusFilter.equals("DRAFTS") && isDraft) {
-                    continue;
-                }
-                
-                if (!isDraft && !currentStatusFilter.equals("DRAFTS")) {
+                if (currentStatusFilter.equals("DRAFTS")) {
+                    if (!isDraft) continue;
+                } else {
+                    if (isDraft) continue;
+                    
                     LocalDateTime start = parseDate(act.startDate);
                     LocalDateTime end = parseDate(act.endDate);
                     
@@ -155,8 +154,6 @@ public class AdminEventFragment extends Fragment {
                         } else if (currentStatusFilter.equals("ENDED")) {
                             if (!now.isAfter(end)) continue;
                         }
-                    } else {
-                         continue;
                     }
                 }
             }
