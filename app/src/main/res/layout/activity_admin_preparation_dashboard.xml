@@ -81,27 +81,27 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Overview" />
+                android:text="Tổng quan" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Budget" />
+                android:text="Ngân sách" />
                 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Organizers" />
+                android:text="Ban tổ chức" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tasks" />
+                android:text="Nhiệm vụ" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Expenses" />
+                android:text="Chi phí" />
 
         </com.google.android.material.tabs.TabLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -139,7 +139,7 @@
                         android:id="@+id/tvBudgetTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="BUDGET OVERVIEW"
+                        android:text="TỔNG QUAN NGÂN SÁCH"
                         android:textColor="#A03A00"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -151,7 +151,7 @@
                         android:id="@+id/tvViewAllBudget"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="View All"
+                        android:text="Xem tất cả"
                         android:textColor="#8B5CF6"
                         android:textSize="12sp"
                         android:textStyle="bold"
@@ -214,7 +214,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Đã Tiêu"
+                                android:text="Đã chi"
                                 android:textColor="#6B7280"
                                 android:textSize="12sp" />
                             <TextView
@@ -236,7 +236,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Còn Lại"
+                                android:text="Còn lại"
                                 android:textColor="#6B7280"
                                 android:textSize="12sp" />
                             <TextView
@@ -281,6 +281,160 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- WALLETS OVERVIEW (Overview tab only) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvWalletsOverview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="16dp">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="PHÂN BỔ THEO VÍ"
+                            android:textColor="#A03A00"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textAllCaps="true" />
+
+                        <TextView
+                            android:id="@+id/tvAllocatedSummary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#6B7280"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvOverviewWallets"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:nestedScrollingEnabled="false" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- CASH FLOW OVERVIEW (Overview tab only) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cvCashFlow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="20dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#FFFFFF"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DÒNG TIỀN"
+                        android:textColor="#A03A00"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textAllCaps="true"
+                        android:layout_marginBottom="16dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:background="@drawable/bg_card_green_soft"
+                            android:padding="12dp"
+                            android:layout_marginEnd="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tiền Trong Ví"
+                                android:textColor="#059669"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:id="@+id/tvCashInside"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0đ"
+                                android:textColor="#047857"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:background="@drawable/bg_card_orange_soft"
+                            android:padding="12dp"
+                            android:layout_marginStart="8dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Tiền Ngoài Ví"
+                                android:textColor="#EA580C"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:id="@+id/tvCashOutside"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0đ"
+                                android:textColor="#C2410C"
+                                android:textSize="15sp"
+                                android:textStyle="bold"
+                                android:layout_marginTop="4dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvAdvanceDebtsSummary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textColor="#6B7280"
+                        android:textSize="12sp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- FULL BUDGET TAB (Visible only in Budget Tab) -->
             <include layout="@layout/layout_tab_budget_full"
                 android:id="@+id/layoutBudgetFull"
@@ -321,7 +475,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Workload Warnings"
+                            android:text="Cảnh báo khối lượng công việc"
                             android:textColor="#1a1c1c"
                             android:textSize="18sp"
                             android:textStyle="bold" />
@@ -401,7 +555,7 @@
                     android:id="@+id/tvViewAllOrganizers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View All"
+                    android:text="Xem tất cả"
                     android:textColor="#8B5CF6"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -429,7 +583,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Task List"
+                    android:text="Danh sách nhiệm vụ"
                     android:textColor="#111827"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -441,7 +595,7 @@
                     android:id="@+id/tvViewAllTasks"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View All"
+                    android:text="Xem tất cả"
                     android:textColor="#8B5CF6"
                     android:textSize="12sp"
                     android:textStyle="bold"
@@ -571,7 +725,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Expense Approval"
+                    android:text="Duyệt chi phí"
                     android:textColor="#111827"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -583,7 +737,7 @@
                     android:id="@+id/tvViewAllExpenses"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View All"
+                    android:text="Xem tất cả"
                     android:textColor="#8B5CF6"
                     android:textSize="12sp"
                     android:textStyle="bold"

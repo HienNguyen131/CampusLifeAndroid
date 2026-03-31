@@ -1,7 +1,6 @@
 package com.example.campuslife.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import com.bumptech.glide.Glide;
 import com.example.campuslife.BuildConfig;
 import com.example.campuslife.R;
 import com.example.campuslife.api.ApiClient;
+import com.example.campuslife.utils.StatusBadgeHelper;
 import com.example.campuslife.api.ApiResponse;
 import com.example.campuslife.entity.preparation.ApproveExpenseRequest;
 import com.example.campuslife.entity.preparation.ExpenseDto;
@@ -118,16 +118,7 @@ public class PreparationExpenseAdapter extends RecyclerView.Adapter<PreparationE
         } else {
             holder.layoutActions.setVisibility(View.GONE);
             holder.tvStatusBadge.setVisibility(View.VISIBLE);
-            
-            if ("APPROVED".equals(expense.status)) {
-                holder.tvStatusBadge.setText("ĐÃ DUYỆT");
-                holder.tvStatusBadge.setTextColor(Color.parseColor("#10B981"));
-                holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_squircle_green);
-            } else {
-                holder.tvStatusBadge.setText("TỪ CHỐI");
-                holder.tvStatusBadge.setTextColor(Color.parseColor("#EF4444"));
-                holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_squircle_red);
-            }
+            StatusBadgeHelper.applyExpenseStatus(holder.tvStatusBadge, expense.status);
         }
     }
 

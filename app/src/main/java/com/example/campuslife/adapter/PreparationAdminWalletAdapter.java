@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.campuslife.R;
 import com.example.campuslife.entity.preparation.BudgetCategoryDto;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -58,6 +59,19 @@ public class PreparationAdminWalletAdapter extends RecyclerView.Adapter<Preparat
         } catch (Exception e) {
             holder.tvWalletRemaining.setText(wallet.remainingAmount + "đ");
         }
+
+        if (holder.progressWalletUsed != null) {
+            int pct = wallet.usedPercent != null ? (int) Math.min(Math.round(wallet.usedPercent), 100) : 0;
+            holder.progressWalletUsed.setProgress(pct);
+            if (holder.tvWalletUsedPercent != null) holder.tvWalletUsedPercent.setText(pct + "%");
+            if (pct >= 90) {
+                holder.progressWalletUsed.setIndicatorColor(android.graphics.Color.parseColor("#DC2626"));
+            } else if (pct >= 70) {
+                holder.progressWalletUsed.setIndicatorColor(android.graphics.Color.parseColor("#EA580C"));
+            } else {
+                holder.progressWalletUsed.setIndicatorColor(android.graphics.Color.parseColor("#10B981"));
+            }
+        }
     }
 
     @Override
@@ -66,7 +80,8 @@ public class PreparationAdminWalletAdapter extends RecyclerView.Adapter<Preparat
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvWalletName, tvWalletAllocated, tvWalletUsed, tvWalletRemaining;
+        TextView tvWalletName, tvWalletAllocated, tvWalletUsed, tvWalletRemaining, tvWalletUsedPercent;
+        LinearProgressIndicator progressWalletUsed;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +89,8 @@ public class PreparationAdminWalletAdapter extends RecyclerView.Adapter<Preparat
             tvWalletAllocated = itemView.findViewById(R.id.tvWalletAllocated);
             tvWalletUsed = itemView.findViewById(R.id.tvWalletUsed);
             tvWalletRemaining = itemView.findViewById(R.id.tvWalletRemaining);
+            progressWalletUsed = itemView.findViewById(R.id.progressWalletUsed);
+            tvWalletUsedPercent = itemView.findViewById(R.id.tvWalletUsedPercent);
         }
     }
 }

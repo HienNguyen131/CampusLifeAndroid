@@ -89,17 +89,7 @@ public class PreparationTaskDetailManager {
         tvDesc.setText(task.description != null ? task.description : "Chưa có mô tả.");
         
         String status = task.status != null ? task.status : "PENDING";
-        tvStatus.setText(status);
-        if ("COMPLETED".equals(status)) {
-            tvStatus.setTextColor(Color.parseColor("#065F46"));
-            tvStatus.setBackgroundResource(R.drawable.bg_pill_grey);
-        } else if ("ACCEPTED".equals(status)) {
-            tvStatus.setTextColor(Color.parseColor("#1E40AF"));
-            tvStatus.setBackgroundResource(R.drawable.bg_pill_blue);
-        } else {
-            tvStatus.setTextColor(Color.parseColor("#A03A00"));
-            tvStatus.setBackgroundResource(R.drawable.bg_pill_grey);
-        }
+        StatusBadgeHelper.applyTaskStatus(tvStatus, status);
 
         if (task.deadline != null) {
             try {
@@ -520,7 +510,7 @@ public class PreparationTaskDetailManager {
         List<Long> studentIds = new ArrayList<>();
         if (membersList != null) {
             for (PreparationTaskMemberDto m : membersList) {
-                studentNames.add(m.studentName != null ? m.studentName : "Unknown");
+                studentNames.add(m.studentName != null ? m.studentName : "Không rõ");
                 studentIds.add(m.studentId);
             }
         }

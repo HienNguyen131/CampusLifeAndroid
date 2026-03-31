@@ -39,6 +39,7 @@ public class AdminEventFragment extends Fragment {
 
     private String currentStatusFilter = "ALL";
     private String currentTypeFilter = "ALL";
+    private String currentPrepFilter = "ALL";
 
     @Nullable
     @Override
@@ -79,11 +80,13 @@ public class AdminEventFragment extends Fragment {
         }
 
         fetchActivities();
+        applyFilters();
     }
 
     private void setupFilters(View view) {
         com.google.android.material.chip.ChipGroup cgStatusFilter = view.findViewById(R.id.cgStatusFilter);
         com.google.android.material.chip.ChipGroup cgTypeFilter = view.findViewById(R.id.cgTypeFilter);
+        com.google.android.material.chip.ChipGroup cgPrepFilter = view.findViewById(R.id.cgPrepFilter);
 
         cgStatusFilter.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (checkedIds.isEmpty()) return;
@@ -106,6 +109,15 @@ public class AdminEventFragment extends Fragment {
             else currentTypeFilter = "ALL";
             applyFilters();
         });
+
+        cgPrepFilter.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            int id = checkedIds.get(0);
+            if (id == R.id.chipPrepEnabled) currentPrepFilter = "ENABLED";
+            else if (id == R.id.chipPrepDisabled) currentPrepFilter = "DISABLED";
+            else currentPrepFilter = "ALL";
+            applyFilters();
+        });
     }
 
     private void applyFilters() {
@@ -126,13 +138,11 @@ public class AdminEventFragment extends Fragment {
             if (!currentStatusFilter.equals("ALL")) {
                 boolean isDraft = (act.isDraft != null && act.isDraft);
                 
-                if (currentStatusFilter.equals("DRAFTS") && !isDraft) {
-                    continue;
-                } else if (!currentStatusFilter.equals("DRAFTS") && isDraft) {
-                    continue;
-                }
-                
-                if (!isDraft && !currentStatusFilter.equals("DRAFTS")) {
+                if (currentStatusFilter.equals("DRAFTS")) {
+                    if (!isDraft) continue;
+                } else {
+                    if (isDraft) continue;
+                    
                     LocalDateTime start = parseDate(act.startDate);
                     LocalDateTime end = parseDate(act.endDate);
                     
@@ -144,9 +154,17 @@ public class AdminEventFragment extends Fragment {
                         } else if (currentStatusFilter.equals("ENDED")) {
                             if (!now.isAfter(end)) continue;
                         }
-                    } else {
-                         continue;
                     }
+                }
+            }
+
+            // Filter by Preparation Status
+            if (!currentPrepFilter.equals("ALL")) {
+                boolean hasPrep = act.isHasPreparation();
+                if (currentPrepFilter.equals("ENABLED") && !hasPrep) {
+                    continue;
+                } else if (currentPrepFilter.equals("DISABLED") && hasPrep) {
+                    continue;
                 }
             }
 
@@ -169,19 +187,18 @@ public class AdminEventFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<List<Activity>>> call, Response<ApiResponse<List<Activity>>> response) {
                 if (!isAdded() || getContext() == null) return;
-                
+
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     List<Activity> data = response.body().getData();
                     allActivitiesList.clear();
-                    
+
                     if (data != null) {
-                        for(Activity act : data) {
+                        for (Activity act : data) {
                             if (!act.isDeleted && act.getSeries() == null) {
                                 allActivitiesList.add(act);
                             }
                         }
                     }
-                    
                     applyFilters();
                 } else {
                     Toast.makeText(requireContext(), "Lỗi tải sự kiện", Toast.LENGTH_SHORT).show();

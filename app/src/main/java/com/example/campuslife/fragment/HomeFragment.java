@@ -138,11 +138,7 @@ public class HomeFragment extends Fragment {
             startActivity(i);
         });
 
-        view.findViewById(R.id.cardPreparation).setOnClickListener(v -> {
-            Intent i = new Intent(requireContext(), StudentPreparationActivity.class);
-            startActivity(i);
-        });
-
+        
         String currentMonth = LocalDate.now()
                 .getMonth()
                 .getDisplayName(TextStyle.FULL, Locale.ENGLISH);

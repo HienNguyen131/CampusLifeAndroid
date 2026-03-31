@@ -7,6 +7,8 @@ public class CreateExpenseRequest {
     public String description;
     public String evidenceUrl;
 
+    public CreateExpenseRequest() {}
+
     public CreateExpenseRequest(Long taskId, Long categoryId, String amount, String description, String evidenceUrl) {
         this.taskId = taskId;
         this.categoryId = categoryId;

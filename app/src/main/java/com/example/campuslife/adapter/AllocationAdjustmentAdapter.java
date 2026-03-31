@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.campuslife.R;
 import com.example.campuslife.api.ApiClient;
+import com.example.campuslife.utils.StatusBadgeHelper;
 import com.example.campuslife.api.ApiResponse;
 import com.example.campuslife.entity.preparation.AdminDecisionAllocationAdjustmentRequest;
 import com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto;
@@ -59,10 +60,20 @@ public class AllocationAdjustmentAdapter extends RecyclerView.Adapter<Allocation
         AllocationAdjustmentRequestDto item = list.get(position);
 
         holder.tvTaskTitle.setText(item.taskTitle != null ? item.taskTitle : "Task #" + item.taskId);
-        holder.tvCreatedByName.setText(item.createdByName != null ? "Bởi: " + item.createdByName : "Khuyết danh");
+        String byName = item.requestedByName != null ? item.requestedByName : item.createdByName;
+        holder.tvCreatedByName.setText(byName != null ? "Bởi: " + byName : "Khuyết danh");
         holder.tvDescription.setText(item.description != null ? item.description : "Không có lý do.");
 
-        holder.tvDate.setText(item.createdAt != null ? item.createdAt : "");
+        if (item.createdAt != null) {
+            String dateFormatted = item.createdAt;
+            try {
+                java.util.Date date = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).parse(item.createdAt);
+                dateFormatted = new java.text.SimpleDateFormat("HH:mm dd/MM/yyyy", java.util.Locale.getDefault()).format(date);
+            } catch (Exception ignored) {}
+            holder.tvDate.setText(dateFormatted);
+        } else {
+            holder.tvDate.setText("");
+        }
 
         if (item.amount != null) {
             try {
@@ -75,25 +86,8 @@ public class AllocationAdjustmentAdapter extends RecyclerView.Adapter<Allocation
         }
 
         String status = item.status != null ? item.status : "UNKNOWN";
-
-        if ("PENDING".equals(status)) {
-            holder.tvStatusBadge.setText("CHỜ DUYỆT");
-            holder.tvStatusBadge.setTextColor(Color.parseColor("#64748B"));
-            holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_chip_grey_soft);
-            
-            holder.layoutActions.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
-        } else {
-            holder.layoutActions.setVisibility(View.GONE);
-            if ("APPROVED".equals(status)) {
-                holder.tvStatusBadge.setText("ĐÃ DUYỆT");
-                holder.tvStatusBadge.setTextColor(Color.parseColor("#10B981"));
-                holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_pill_blue);
-            } else if ("REJECTED".equals(status)) {
-                holder.tvStatusBadge.setText("BỊ TỪ CHỐI");
-                holder.tvStatusBadge.setTextColor(Color.parseColor("#EF4444"));
-                holder.tvStatusBadge.setBackgroundResource(R.drawable.bg_pill_grey);
-            }
-        }
+        StatusBadgeHelper.applyAllocationAdjStatus(holder.tvStatusBadge, status);
+        holder.layoutActions.setVisibility("PENDING".equals(status) && isAdmin ? View.VISIBLE : View.GONE);
 
         holder.btnApproveAllocation.setOnClickListener(v -> {
             if (!isAdmin || !"PENDING".equals(item.status)) return;

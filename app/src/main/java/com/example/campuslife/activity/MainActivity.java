@@ -52,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
                 fragment = new HomeFragment();
+            } else if (id == R.id.nav_preparation) {
+                Intent prepIntent = new Intent(this, StudentPreparationActivity.class);
+                startActivity(prepIntent);
+                return true;
             } else if (id == R.id.nav_profile) {
                 fragment = new ProfileFragment();
             } else if (id == R.id.nav_ticket) {

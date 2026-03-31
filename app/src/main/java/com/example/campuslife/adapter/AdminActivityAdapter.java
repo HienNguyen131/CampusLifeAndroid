@@ -79,7 +79,18 @@ public class AdminActivityAdapter extends RecyclerView.Adapter<AdminActivityAdap
             holder.tvMetrics.setText(String.join("  |  ", metrics));
         }
 
-        holder.tvPrepStatus.setVisibility(View.GONE);
+        // Hiển thị trạng thái preparation
+        if (act.isHasPreparation()) {
+            holder.tvPrepStatus.setVisibility(View.VISIBLE);
+            holder.tvPrepStatus.setText("🔧 Chuẩn bị");
+            holder.tvPrepStatus.setTextColor(android.graphics.Color.parseColor("#065F46"));
+            holder.tvPrepStatus.setBackgroundResource(R.drawable.bg_pill_prep_active);
+        } else {
+            holder.tvPrepStatus.setVisibility(View.VISIBLE);
+            holder.tvPrepStatus.setText("Chưa chuẩn bị");
+            holder.tvPrepStatus.setTextColor(android.graphics.Color.parseColor("#6B7280"));
+            holder.tvPrepStatus.setBackgroundResource(R.drawable.bg_pill_status);
+        }
 
         String img = act.bannerUrl;
         if (img != null && !img.isEmpty()) {

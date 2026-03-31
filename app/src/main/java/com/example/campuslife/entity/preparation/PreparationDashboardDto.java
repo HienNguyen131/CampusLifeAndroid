@@ -5,6 +5,8 @@ import java.io.Serializable;
 import java.util.List;
 
 public class PreparationDashboardDto implements Serializable {
+    public Long activityId;
+
     @SerializedName(value = "hasPreparation", alternate = { "preparation", "enabled" })
     public boolean hasPreparation;
 

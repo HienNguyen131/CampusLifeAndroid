@@ -119,25 +119,19 @@ public class AdminHomeFragment extends Fragment {
             @Override
             public void onResponse(Call<ApiResponse<List<Activity>>> call, Response<ApiResponse<List<Activity>>> response) {
                 if (!isAdded() || getContext() == null) return;
-                
+
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
                     List<Activity> data = response.body().getData();
                     activityList.clear();
-                    
+
                     if (data != null) {
-                        for(Activity act : data) {
-                            if (!act.isDeleted) {
+                        for (Activity act : data) {
+                            if (!act.isDeleted && act.isHasPreparation()) {
                                 activityList.add(act);
                             }
                         }
                     }
-                    
-                    adapter.notifyDataSetChanged();
-                    
-                    if (tvActiveEventCount != null) {
-                        tvActiveEventCount.setText(String.format("%02d", activityList.size()));
-                    }
-
+                    updateUI();
                 } else {
                     Toast.makeText(requireContext(), "Lỗi tải sự kiện", Toast.LENGTH_SHORT).show();
                 }
@@ -150,6 +144,16 @@ public class AdminHomeFragment extends Fragment {
                 Toast.makeText(requireContext(), "Không thể kết nối máy chủ", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void updateUI() {
+        if (!isAdded()) return;
+        
+        adapter.notifyDataSetChanged();
+        
+        if (tvActiveEventCount != null) {
+            tvActiveEventCount.setText(String.format("%02d", activityList.size()));
+        }
     }
 
 }
