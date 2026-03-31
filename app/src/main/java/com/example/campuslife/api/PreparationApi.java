@@ -1,9 +1,12 @@
 package com.example.campuslife.api;
 
 import com.example.campuslife.entity.preparation.CreateExpenseRequest;
+import com.example.campuslife.entity.preparation.ExpenseCategorySuggestionDto;
 import com.example.campuslife.entity.preparation.ExpenseDto;
+import com.example.campuslife.entity.preparation.MyPreparationTaskDto;
 import com.example.campuslife.entity.preparation.PreparationDashboardDto;
 import com.example.campuslife.entity.preparation.PreparationTaskDto;
+import com.example.campuslife.entity.preparation.TaskAllocationSourceDto;
 import com.example.campuslife.entity.preparation.UpdateTaskStatusRequest;
 import com.example.campuslife.entity.preparation.UploadResultDto;
 
@@ -23,6 +26,26 @@ import retrofit2.http.Query;
 public interface PreparationApi {
     @GET("/api/preparation/my/activity-ids")
     Call<ApiResponse<List<Long>>> myPreparationActivityIds();
+
+    @GET("/api/preparation/my/activities/tasks")
+    Call<ApiResponse<List<MyPreparationTaskDto>>> getMyTasks(@Query("activityId") long activityId);
+
+    @GET("/api/preparation/detail/{taskId}")
+    Call<ApiResponse<PreparationTaskDto>> getTaskDetail(@Path("taskId") long taskId);
+
+    @GET("/api/preparation/tasks/{taskId}/expense-category-suggestions")
+    Call<ApiResponse<List<ExpenseCategorySuggestionDto>>> suggestExpenseCategories(
+            @Path("taskId") long taskId,
+            @Query("amount") String amount);
+
+    @GET("/api/preparation/tasks/{taskId}/allocation-sources")
+    Call<ApiResponse<List<TaskAllocationSourceDto>>> getTaskAllocationSources(
+            @Path("taskId") long taskId);
+
+    @GET("/api/preparation/my/fund-advances")
+    Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDto>>> getMyFundAdvances(
+            @Query("activityId") long activityId,
+            @Query("taskId") Long taskId);
 
     @PUT("/api/preparation/activities/{activityId}/toggle")
     Call<ApiResponse<Object>> togglePreparation(
@@ -176,6 +199,11 @@ public interface PreparationApi {
     // --- Allocation Adjustments ---
     @GET("/api/preparation/activities/{activityId}/allocation-adjustments")
     Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> listAllocationAdjustments(
+            @Path("activityId") long activityId,
+            @Query("status") String status);
+
+    @GET("/api/preparation/activities/{activityId}/reports/cash-flow")
+    Call<ApiResponse<com.example.campuslife.entity.preparation.CashFlowReportDto>> getCashFlowReport(
             @Path("activityId") long activityId);
 
     @POST("/api/preparation/tasks/{taskId}/allocation-adjustments")

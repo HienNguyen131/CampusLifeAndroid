@@ -6,11 +6,16 @@ import java.util.List;
 
 public class AllocationAdjustmentRequestDto implements Serializable {
     public Long id;
+    public Long activityId;
     public Long taskId;
     public String taskTitle;
     public BigDecimal amount;
     public String description;
     public String status;
-    public String createdAt;
+    public Long requestedById;
+    public String requestedByName;
     public String createdByName;
+    public String createdAt;
+    public String decidedAt;
+    public Long decidedById;
 }

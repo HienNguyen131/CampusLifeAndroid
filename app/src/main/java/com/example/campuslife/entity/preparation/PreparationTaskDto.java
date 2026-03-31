@@ -18,6 +18,7 @@ public class PreparationTaskDto implements Serializable {
     public String description;
     public String deadline;
     public BigDecimal allocatedAmount;
+    @com.google.gson.annotations.SerializedName(value = "isFinancial", alternate = {"financial"})
     public Boolean isFinancial;
     public String status;
 }

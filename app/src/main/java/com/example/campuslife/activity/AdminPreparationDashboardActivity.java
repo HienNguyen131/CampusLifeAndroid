@@ -39,6 +39,13 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
     private TextView tvWalletCount, tvTotalUsedPercent;
     private com.google.android.material.progressindicator.LinearProgressIndicator progressTotalBudget;
     
+    // Overview Wallets & Cash Flow
+    private android.view.View cvWalletsOverview, cvCashFlow;
+    private TextView tvAllocatedSummary, tvCashInside, tvCashOutside, tvAdvanceDebtsSummary;
+    private RecyclerView rvOverviewWallets;
+    private com.example.campuslife.adapter.PreparationAdminWalletAdapter overviewWalletAdapter;
+    private List<com.example.campuslife.entity.preparation.BudgetCategoryDto> overviewWalletList;
+
     // Full Budget Tab UI Elements
     private android.view.View layoutEmptyBudget, layoutBudgetData, layoutBudgetFull, cvResidualWallet;
     private TextView tvBigTotalAmount, tvBigSpent, tvBigProgressPercent, tvTotalCategoriesCount;
@@ -97,7 +104,8 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         initViews();
         setupRecyclerViews();
         setupFabListener();
-        
+
+        loadActivityTitle();
         loadDashboardData();
     }
 
@@ -130,6 +138,14 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         spPendingExpenseFilter = findViewById(R.id.spPendingExpenseFilter);
         spHistoryExpenseFilter = findViewById(R.id.spHistoryExpenseFilter);
         
+        cvWalletsOverview = findViewById(R.id.cvWalletsOverview);
+        cvCashFlow = findViewById(R.id.cvCashFlow);
+        tvAllocatedSummary = findViewById(R.id.tvAllocatedSummary);
+        tvCashInside = findViewById(R.id.tvCashInside);
+        tvCashOutside = findViewById(R.id.tvCashOutside);
+        tvAdvanceDebtsSummary = findViewById(R.id.tvAdvanceDebtsSummary);
+        rvOverviewWallets = findViewById(R.id.rvOverviewWallets);
+
         layoutBudgetFull = findViewById(R.id.layoutBudgetFull);
         layoutEmptyBudget = findViewById(R.id.layoutEmptyBudget);
         layoutBudgetData = findViewById(R.id.layoutBudgetData);
@@ -169,6 +185,13 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
             adminWalletAdapter = new com.example.campuslife.adapter.PreparationAdminWalletAdapter(this, adminWalletList);
             rvAdminWallets.setLayoutManager(new LinearLayoutManager(this));
             rvAdminWallets.setAdapter(adminWalletAdapter);
+        }
+
+        overviewWalletList = new ArrayList<>();
+        if (rvOverviewWallets != null) {
+            overviewWalletAdapter = new com.example.campuslife.adapter.PreparationAdminWalletAdapter(this, overviewWalletList);
+            rvOverviewWallets.setLayoutManager(new LinearLayoutManager(this));
+            rvOverviewWallets.setAdapter(overviewWalletAdapter);
         }
 
         organizerList = new ArrayList<>();
@@ -218,6 +241,23 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         }
     }
 
+    private void loadActivityTitle() {
+        ApiClient.activities(this).detail(activityId).enqueue(new Callback<ApiResponse<com.example.campuslife.entity.Activity>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.campuslife.entity.Activity>> call, Response<ApiResponse<com.example.campuslife.entity.Activity>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    com.example.campuslife.entity.Activity act = response.body().getData();
+                    if (act != null && act.name != null) {
+                        TextView tvToolbarTitle = findViewById(R.id.tvToolbarTitle);
+                        if (tvToolbarTitle != null) tvToolbarTitle.setText(act.name);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.Activity>> call, Throwable t) {}
+        });
+    }
+
     private void loadDashboardData() {
         ApiClient.preparation(this).getDashboard(activityId).enqueue(new Callback<ApiResponse<PreparationDashboardDto>>() {
             @Override
@@ -232,6 +272,7 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                         if (!hasPreparation) return;
 
                         loadFinanceOverview();
+                        loadCashFlowData();
                         loadOrganizersData();
                         loadWorkloadWarningsData();
                         loadExpensesData();
@@ -360,10 +401,6 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                     updatePreparationToggleUI();
                     if (enabled) {
                         loadDashboardData();
-                        loadFinanceOverview();
-                        loadOrganizersData();
-                        loadWorkloadWarningsData();
-                        loadExpensesData();
                     }
                 } else {
                     Toast.makeText(AdminPreparationDashboardActivity.this, "Lỗi khi chuyển đổi", Toast.LENGTH_SHORT).show();
@@ -391,7 +428,7 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                         try {
                             tvSpentAmount.setText(dto.totalApprovedSpent != null ? df.format(Double.parseDouble(dto.totalApprovedSpent)) + " VNĐ" : "0 VNĐ");
                         } catch (Exception e) { tvSpentAmount.setText(dto.totalApprovedSpent + " VNĐ"); }
-                        
+
                         try {
                             double total = dto.totalBudget != null ? Double.parseDouble(dto.totalBudget) : 0;
                             double spent = dto.totalApprovedSpent != null ? Double.parseDouble(dto.totalApprovedSpent) : 0;
@@ -406,23 +443,43 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                                 if (progressTotalBudget != null) progressTotalBudget.setProgress(0);
                                 if (tvTotalUsedPercent != null) tvTotalUsedPercent.setText("0%");
                             }
-                            
+
                             if (tvBigTotalAmount != null) tvBigTotalAmount.setText(tvTotalAmount.getText());
                             if (tvBigSpent != null) tvBigSpent.setText("Tổng chi tiêu: " + tvSpentAmount.getText());
-                            if (tvBigProgressPercent != null) tvBigProgressPercent.setText(tvTotalUsedPercent.getText());
+                            if (tvBigProgressPercent != null) tvBigProgressPercent.setText(tvTotalUsedPercent != null ? tvTotalUsedPercent.getText() : "0%");
                             if (progressBigTotal != null && progressTotalBudget != null) progressBigTotal.setProgress(progressTotalBudget.getProgress());
-                            
-                        } catch (Exception e) { 
+
+                        } catch (Exception e) {
                             tvRemainingAmount.setText("0 VNĐ");
                             if (progressTotalBudget != null) progressTotalBudget.setProgress(0);
                             if (tvTotalUsedPercent != null) tvTotalUsedPercent.setText("0%");
+                        }
+
+                        // Populate wallets overview from FinanceOverviewReportDto.wallets
+                        if (dto.wallets != null && !dto.wallets.isEmpty()) {
+                            overviewWalletList.clear();
+                            overviewWalletList.addAll(dto.wallets);
+                            if (overviewWalletAdapter != null) overviewWalletAdapter.notifyDataSetChanged();
+                            if (cvWalletsOverview != null) {
+                                cvWalletsOverview.setVisibility(android.view.View.VISIBLE);
+                                double totalAlloc = 0;
+                                for (com.example.campuslife.entity.preparation.BudgetCategoryDto w : dto.wallets) {
+                                    try { totalAlloc += w.allocatedAmount != null ? Double.parseDouble(w.allocatedAmount) : 0; } catch (Exception ignored) {}
+                                }
+                                if (tvAllocatedSummary != null)
+                                    tvAllocatedSummary.setText(dto.wallets.size() + " ví • " + df.format(totalAlloc) + "đ tổng");
+                            }
+                        } else {
+                            if (cvWalletsOverview != null) cvWalletsOverview.setVisibility(android.view.View.GONE);
                         }
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.preparation.FinanceOverviewReportDto>> call, Throwable t) {}
+            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.preparation.FinanceOverviewReportDto>> call, Throwable t) {
+                android.util.Log.e("PrepDashboard", "loadFinanceOverview failed", t);
+            }
         });
     }
 
@@ -441,7 +498,9 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<List<OrganizerDto>>> call, Throwable t) {}
+            public void onFailure(Call<ApiResponse<List<OrganizerDto>>> call, Throwable t) {
+                android.util.Log.e("PrepDashboard", "loadOrganizers failed", t);
+            }
         });
     }
 
@@ -468,24 +527,25 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                             TextView tvBadge = view.findViewById(R.id.tvWarningBadge);
                             
                             tvName.setText(warning.getStudentName() != null ? warning.getStudentName() : "Unknown");
-                            tvDesc.setText((warning.getTaskCount() != null ? warning.getTaskCount() : 0) + " tasks currently assigned");
+                            tvDesc.setText("Đang đảm nhận " + (warning.getTaskCount() != null ? warning.getTaskCount() : 0) + " nhiệm vụ");
                             
                             String type = warning.getType() != null ? warning.getType() : "UNKNOWN";
-                            tvBadge.setText(type);
-                            
+                            android.graphics.drawable.GradientDrawable badgeBg = new android.graphics.drawable.GradientDrawable();
+                            badgeBg.setCornerRadius(100f);
                             if ("OVERLOADED".equalsIgnoreCase(type)) {
+                                tvBadge.setText("QUÁ TẢI");
                                 tvBadge.setTextColor(android.graphics.Color.parseColor("#93000a"));
-                                android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
-                                bg.setColor(android.graphics.Color.parseColor("#ffdad6"));
-                                bg.setCornerRadius(100f);
-                                tvBadge.setBackground(bg);
+                                badgeBg.setColor(android.graphics.Color.parseColor("#ffdad6"));
                             } else if ("UNASSIGNED".equalsIgnoreCase(type)) {
+                                tvBadge.setText("CHƯA PHÂN");
                                 tvBadge.setTextColor(android.graphics.Color.parseColor("#594237"));
-                                android.graphics.drawable.GradientDrawable bg = new android.graphics.drawable.GradientDrawable();
-                                bg.setColor(android.graphics.Color.parseColor("#e2e2e2"));
-                                bg.setCornerRadius(100f);
-                                tvBadge.setBackground(bg);
+                                badgeBg.setColor(android.graphics.Color.parseColor("#e2e2e2"));
+                            } else {
+                                tvBadge.setText(type);
+                                tvBadge.setTextColor(android.graphics.Color.parseColor("#6B7280"));
+                                badgeBg.setColor(android.graphics.Color.parseColor("#F3F4F6"));
                             }
+                            tvBadge.setBackground(badgeBg);
                             
                             container.addView(view);
                         }
@@ -539,12 +599,14 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<List<ExpenseDto>>> call, Throwable t) {}
+            public void onFailure(Call<ApiResponse<List<ExpenseDto>>> call, Throwable t) {
+                android.util.Log.e("PrepDashboard", "loadExpenses failed", t);
+            }
         });
     }
 
     private void loadAllocationAdjustments() {
-        ApiClient.preparation(this).listAllocationAdjustments(activityId).enqueue(new Callback<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>>() {
+        ApiClient.preparation(this).listAllocationAdjustments(activityId, null).enqueue(new Callback<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> call, Response<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isStatus() && response.body().getData() != null) {
@@ -556,7 +618,9 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> call, Throwable t) {}
+            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto>>> call, Throwable t) {
+                android.util.Log.e("PrepDashboard", "loadAllocationAdj failed", t);
+            }
         });
     }
 
@@ -586,7 +650,9 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                 }
             }
             @Override
-            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>> call, Throwable t) {}
+            public void onFailure(Call<ApiResponse<List<com.example.campuslife.entity.preparation.FundAdvanceDebtDto>>> call, Throwable t) {
+                android.util.Log.e("PrepDashboard", "loadFundAdvanceDebts failed", t);
+            }
         });
     }
 
@@ -648,6 +714,36 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
         }
     }
 
+    private void loadCashFlowData() {
+        ApiClient.preparation(this).getCashFlowReport(activityId).enqueue(new Callback<ApiResponse<com.example.campuslife.entity.preparation.CashFlowReportDto>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<com.example.campuslife.entity.preparation.CashFlowReportDto>> call,
+                                   Response<ApiResponse<com.example.campuslife.entity.preparation.CashFlowReportDto>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
+                    com.example.campuslife.entity.preparation.CashFlowReportDto dto = response.body().getData();
+                    if (dto == null) return;
+                    if (cvCashFlow != null) cvCashFlow.setVisibility(android.view.View.VISIBLE);
+                    try {
+                        if (tvCashInside != null && dto.cashInsideWallet != null)
+                            tvCashInside.setText(df.format(dto.cashInsideWallet.doubleValue()) + "đ");
+                    } catch (Exception ignored) {}
+                    try {
+                        if (tvCashOutside != null && dto.cashOutsideWallet != null)
+                            tvCashOutside.setText(df.format(dto.cashOutsideWallet.doubleValue()) + "đ");
+                    } catch (Exception ignored) {}
+                    if (tvAdvanceDebtsSummary != null && dto.advanceDebts != null && !dto.advanceDebts.isEmpty()) {
+                        tvAdvanceDebtsSummary.setVisibility(android.view.View.VISIBLE);
+                        tvAdvanceDebtsSummary.setText(dto.advanceDebts.size() + " sinh viên đang giữ tạm ứng");
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<com.example.campuslife.entity.preparation.CashFlowReportDto>> call, Throwable t) {
+                android.util.Log.e("PrepDashboard", "loadCashFlow failed", t);
+            }
+        });
+    }
+
     private void setupFabListener() {
         // android.view.View btnUpdateBudget = findViewById(R.id.btnUpdateBudget);
         // if (btnUpdateBudget != null) {
@@ -702,7 +798,12 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
 
     private void updateTabSelection(int position) {
         boolean showAll = position == 0;
-        
+
+        if (cvWalletsOverview != null)
+            cvWalletsOverview.setVisibility(showAll && !overviewWalletList.isEmpty() ? android.view.View.VISIBLE : android.view.View.GONE);
+        if (cvCashFlow != null)
+            cvCashFlow.setVisibility(showAll ? cvCashFlow.getVisibility() : android.view.View.GONE);
+
         // Hide "View All" buttons and custom buttons appropriately
         findViewById(R.id.tvViewAllBudget).setVisibility(showAll ? android.view.View.VISIBLE : android.view.View.GONE);
         // android.view.View btnUpdateBudget = findViewById(R.id.btnUpdateBudget);
@@ -1121,11 +1222,11 @@ public class AdminPreparationDashboardActivity extends AppCompatActivity {
                         @Override
                         public void onResponse(Call<ApiResponse<PreparationTaskDto>> call, Response<ApiResponse<PreparationTaskDto>> response) {
                             if (response.isSuccessful() && response.body() != null && response.body().isStatus()) {
-                                Toast.makeText(AdminPreparationDashboardActivity.this, "Task Assigned", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AdminPreparationDashboardActivity.this, "Đã phân công nhiệm vụ", Toast.LENGTH_SHORT).show();
                                 loadDashboardData();
                                 dialog.dismiss();
                             } else {
-                                Toast.makeText(AdminPreparationDashboardActivity.this, "Failed", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AdminPreparationDashboardActivity.this, "Phân công thất bại", Toast.LENGTH_SHORT).show();
                             }
                         }
                         @Override

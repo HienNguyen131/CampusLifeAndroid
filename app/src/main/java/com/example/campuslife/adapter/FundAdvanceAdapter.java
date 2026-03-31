@@ -57,7 +57,7 @@ public class FundAdvanceAdapter extends RecyclerView.Adapter<FundAdvanceAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FundAdvanceDto item = list.get(position);
 
-        String name = item.studentName != null ? item.studentName : "Unknown Student";
+        String name = item.studentName != null ? item.studentName : "Không rõ sinh viên";
         String amtStr = "0đ";
         try {
             amtStr = currencyFormatter.format(item.amount.doubleValue());
@@ -116,10 +116,14 @@ public class FundAdvanceAdapter extends RecyclerView.Adapter<FundAdvanceAdapter.
             holder.layoutHoldingActions.setVisibility(View.GONE);
             holder.tvAmountInfo.setVisibility(View.VISIBLE);
             if ("SETTLED".equals(status)) {
-                holder.tvAmountInfo.setText("Đã hoàn ứng");
+                holder.tvAmountInfo.setText("✓ Đã hoàn ứng");
+                holder.tvAmountInfo.setTextColor(android.graphics.Color.parseColor("#059669"));
             } else if ("REJECTED".equals(status)) {
-                holder.tvAmountInfo.setText("Bị từ chối");
-                holder.tvAmountInfo.setTextColor(context.getResources().getColor(android.R.color.darker_gray));
+                holder.tvAmountInfo.setText("✗ Bị từ chối");
+                holder.tvAmountInfo.setTextColor(android.graphics.Color.parseColor("#DC2626"));
+            } else {
+                holder.tvAmountInfo.setText(status);
+                holder.tvAmountInfo.setTextColor(android.graphics.Color.parseColor("#6B7280"));
             }
         }
 

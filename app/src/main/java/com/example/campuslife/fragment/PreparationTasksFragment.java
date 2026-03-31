@@ -15,12 +15,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.campuslife.R;
-import com.example.campuslife.adapter.PreparationTaskAdapter;
+import com.example.campuslife.adapter.MyTaskAdapter;
 import com.example.campuslife.api.ApiClient;
 import com.example.campuslife.api.ApiResponse;
-import com.example.campuslife.entity.preparation.PreparationDashboardDto;
-import com.example.campuslife.entity.preparation.PreparationTaskDto;
-import com.example.campuslife.entity.preparation.UpdateTaskStatusRequest;
+import com.example.campuslife.entity.preparation.MyPreparationTaskDto;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,11 +40,13 @@ public class PreparationTasksFragment extends Fragment {
 
     private long activityId;
     private long studentId;
+    private String currentFilter = "ALL";
 
     private ProgressBar progress;
     private TextView tvEmpty;
     private RecyclerView rvTasks;
-    private PreparationTaskAdapter adapter;
+    private MyTaskAdapter adapter;
+    private List<MyPreparationTaskDto> allTasksList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -64,75 +67,75 @@ public class PreparationTasksFragment extends Fragment {
         tvEmpty = view.findViewById(R.id.tvEmpty);
         rvTasks = view.findViewById(R.id.rvTasks);
 
-        adapter = new com.example.campuslife.adapter.PreparationTaskAdapter(requireContext(), new java.util.ArrayList<>(), studentId, task -> {
-            com.example.campuslife.utils.PreparationTaskDetailManager manager = new com.example.campuslife.utils.PreparationTaskDetailManager(
-                requireContext(), activityId, studentId, task, this::load
-            );
-            manager.show();
+        adapter = new MyTaskAdapter(requireContext(), new ArrayList<>(), task -> {
+            if (task.id == null) return;
+            com.example.campuslife.fragment.TaskDetailBottomSheetFragment sheet =
+                    com.example.campuslife.fragment.TaskDetailBottomSheetFragment.newInstance(
+                            task.id, activityId, task.myRole != null ? task.myRole : "MEMBER");
+            sheet.setOnDismissCallback(this::load);
+            sheet.show(getChildFragmentManager(), "TaskDetail");
         });
         rvTasks.setLayoutManager(new LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false));
         rvTasks.setAdapter(adapter);
 
+        setupFilter(view);
         load();
     }
 
-    private void load() {
+    private void setupFilter(View view) {
+        com.google.android.material.chip.ChipGroup cg = view.findViewById(R.id.cgTaskFilter);
+        cg.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            int id = checkedIds.get(0);
+            if (id == R.id.chipTaskPending) currentFilter = "PENDING";
+            else if (id == R.id.chipTaskAccepted) currentFilter = "ACCEPTED";
+            else if (id == R.id.chipTaskRequested) currentFilter = "COMPLETION_REQUESTED";
+            else if (id == R.id.chipTaskCompleted) currentFilter = "COMPLETED";
+            else currentFilter = "ALL";
+            applyFilter();
+        });
+    }
+
+    private void applyFilter() {
+        if (!isAdded()) return;
+        List<MyPreparationTaskDto> filtered = new ArrayList<>();
+        for (MyPreparationTaskDto t : allTasksList) {
+            if (currentFilter.equals("ALL") || currentFilter.equals(t.status)) {
+                filtered.add(t);
+            }
+        }
+        adapter.submit(filtered);
+        tvEmpty.setVisibility(filtered.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    public void load() {
+        if (!isAdded()) return;
         showLoading(true);
         tvEmpty.setVisibility(View.GONE);
 
         ApiClient.preparation(requireContext())
-                .getDashboard(activityId)
-                .enqueue(new Callback<ApiResponse<PreparationDashboardDto>>() {
+                .getMyTasks(activityId)
+                .enqueue(new Callback<ApiResponse<List<MyPreparationTaskDto>>>() {
                     @Override
-                    public void onResponse(Call<ApiResponse<PreparationDashboardDto>> call,
-                            Response<ApiResponse<PreparationDashboardDto>> resp) {
+                    public void onResponse(Call<ApiResponse<List<MyPreparationTaskDto>>> call,
+                            Response<ApiResponse<List<MyPreparationTaskDto>>> resp) {
                         showLoading(false);
+                        if (!isAdded()) return;
                         if (!resp.isSuccessful() || resp.body() == null || !resp.body().isStatus()) {
                             toast(resp.body() != null ? resp.body().getMessage() : ("HTTP " + resp.code()));
-                            adapter.submit(null);
                             tvEmpty.setVisibility(View.VISIBLE);
                             return;
                         }
-
-                        PreparationDashboardDto d = resp.body().getData();
-                        if (d == null || d.tasks == null || d.tasks.isEmpty()) {
-                            adapter.submit(null);
-                            tvEmpty.setVisibility(View.VISIBLE);
-                        } else {
-                            adapter.submit(d.tasks);
-                            tvEmpty.setVisibility(View.GONE);
-                        }
+                        List<MyPreparationTaskDto> data = resp.body().getData();
+                        allTasksList.clear();
+                        if (data != null) allTasksList.addAll(data);
+                        applyFilter();
                     }
 
                     @Override
-                    public void onFailure(Call<ApiResponse<PreparationDashboardDto>> call, Throwable t) {
+                    public void onFailure(Call<ApiResponse<List<MyPreparationTaskDto>>> call, Throwable t) {
                         showLoading(false);
-                        toast("Lỗi mạng: " + (t.getMessage() != null ? t.getMessage() : ""));
-                    }
-                });
-    }
-
-    private void updateStatus(PreparationTaskDto task, String newStatus) {
-        showLoading(true);
-
-        ApiClient.preparation(requireContext())
-                .updateTaskStatus(task.id, new UpdateTaskStatusRequest(newStatus))
-                .enqueue(new Callback<ApiResponse<PreparationTaskDto>>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse<PreparationTaskDto>> call,
-                            Response<ApiResponse<PreparationTaskDto>> resp) {
-                        showLoading(false);
-                        if (resp.isSuccessful() && resp.body() != null && resp.body().isStatus()) {
-                            toast("Cập nhật thành công");
-                            load();
-                        } else {
-                            toast(resp.body() != null ? resp.body().getMessage() : ("HTTP " + resp.code()));
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ApiResponse<PreparationTaskDto>> call, Throwable t) {
-                        showLoading(false);
+                        if (!isAdded()) return;
                         toast("Lỗi mạng: " + (t.getMessage() != null ? t.getMessage() : ""));
                     }
                 });
@@ -144,8 +147,7 @@ public class PreparationTasksFragment extends Fragment {
     }
 
     private void toast(String msg) {
-        if (!isAdded())
-            return;
+        if (!isAdded()) return;
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show();
     }
 }

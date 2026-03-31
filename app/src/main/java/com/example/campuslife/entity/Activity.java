@@ -27,6 +27,9 @@ public class Activity implements Serializable {
     @SerializedName("requiresSubmission")
     public boolean requiresSubmission;
 
+    @SerializedName(value = "hasPreparation", alternate = {"isHasPreparation"})
+    public boolean hasPreparation;
+
     public BigDecimal maxPoints;
 
     public String registrationStartDate;
@@ -154,6 +157,14 @@ public class Activity implements Serializable {
 
     public void setRequiresSubmission(boolean requiresSubmission) {
         this.requiresSubmission = requiresSubmission;
+    }
+
+    public boolean isHasPreparation() {
+        return hasPreparation;
+    }
+
+    public void setHasPreparation(boolean hasPreparation) {
+        this.hasPreparation = hasPreparation;
     }
 
     public BigDecimal getMaxPoints() {

@@ -1,7 +1,6 @@
 package com.example.campuslife.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import com.google.android.material.card.MaterialCardView;
 
 import com.example.campuslife.R;
 import com.example.campuslife.entity.preparation.PreparationTaskDto;
+import com.example.campuslife.utils.StatusBadgeHelper;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,7 +50,7 @@ public class PreparationTaskAdapter extends RecyclerView.Adapter<PreparationTask
         PreparationTaskDto task = list.get(position);
 
         holder.tvTaskTitle.setText(task.title);
-        holder.tvAssigneeName.setText(task.assigneeName != null ? task.assigneeName : "No Assigned");
+        holder.tvAssigneeName.setText(task.assigneeName != null ? task.assigneeName : "Chưa phân công");
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -58,25 +58,12 @@ public class PreparationTaskAdapter extends RecyclerView.Adapter<PreparationTask
             }
         });
 
-        String status = task.status;
-        if (status == null) status = "PENDING";
-        
-        holder.tvTaskStatus.setText(status);
-        if ("COMPLETED".equals(status)) {
-            holder.tvTaskStatus.setTextColor(Color.parseColor("#065F46"));
-            holder.tvTaskStatus.setBackgroundResource(R.drawable.bg_squircle_green);
-        } else if ("ACCEPTED".equals(status)) {
-            holder.tvTaskStatus.setTextColor(Color.parseColor("#1E40AF"));
-            holder.tvTaskStatus.setBackgroundResource(R.drawable.bg_squircle_blue);
-        } else {
-            holder.tvTaskStatus.setTextColor(Color.parseColor("#A03A00"));
-            holder.tvTaskStatus.setBackgroundResource(R.drawable.bg_squircle_orange);
-        }
+        StatusBadgeHelper.applyTaskStatus(holder.tvTaskStatus, task.status != null ? task.status : "PENDING");
 
         if (task.deadline != null) {
             try {
                 LocalDateTime dt = LocalDateTime.parse(task.deadline);
-                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 holder.tvDeadline.setText(dt.format(fmt));
             } catch (Exception e) {
                 if (task.deadline.contains("T")) {
@@ -86,7 +73,7 @@ public class PreparationTaskAdapter extends RecyclerView.Adapter<PreparationTask
                 }
             }
         } else {
-            holder.tvDeadline.setText("No deadline");
+            holder.tvDeadline.setText("Chưa có hạn");
         }
     }
 

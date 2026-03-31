@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Row 1: Title + Status badge -->
         <TextView
             android:id="@+id/tvTaskTitle"
             android:layout_width="0dp"
@@ -23,6 +24,8 @@
             android:textColor="#111827"
             android:textSize="14sp"
             android:textStyle="bold"
+            android:maxLines="2"
+            android:ellipsize="end"
             app:layout_constraintEnd_toStartOf="@+id/tvTaskStatus"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,42 +37,77 @@
             android:background="@drawable/bg_squircle_orange"
             android:paddingHorizontal="10dp"
             android:paddingVertical="4dp"
-            android:text="PENDING"
+            android:text="Chưa nhận"
             android:textColor="#A03A00"
             android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- User Info -->
-        <ImageView
-            android:id="@+id/icUser"
-            android:layout_width="14dp"
-            android:layout_height="14dp"
-            android:layout_marginTop="12dp"
-            android:src="@drawable/ic_profile_2"
-            app:tint="#6B7280"
+        <!-- Row 2: Role badge + Financial indicator -->
+        <TextView
+            android:id="@+id/tvRoleBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_squircle_blue"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="MEMBER"
+            android:textColor="#1E40AF"
+            android:textSize="10sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTaskTitle" />
 
         <TextView
-            android:id="@+id/tvAssigneeName"
+            android:id="@+id/tvFinancialBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_squircle_orange"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:text="💰 Tài chính"
+            android:textColor="#92400E"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintStart_toEndOf="@id/tvRoleBadge"
+            app:layout_constraintTop_toTopOf="@id/tvRoleBadge"
+            app:layout_constraintBottom_toBottomOf="@id/tvRoleBadge" />
+
+        <!-- Row 3: Owner info -->
+        <ImageView
+            android:id="@+id/icUser"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginTop="8dp"
+            android:src="@drawable/ic_profile_2"
+            app:tint="#6B7280"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvRoleBadge" />
+
+        <TextView
+            android:id="@+id/tvAssigneeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
             android:text="Sarah Jenkins"
             android:textColor="#4B5563"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/icUser"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/icUser"
             app:layout_constraintTop_toTopOf="@id/icUser" />
 
-        <!-- Deadline Info -->
+        <!-- Row 4: Deadline info -->
         <ImageView
             android:id="@+id/icDate"
             android:layout_width="14dp"
             android:layout_height="14dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="6dp"
             android:src="@drawable/ic_calendar"
             app:tint="#6B7280"
             app:layout_constraintStart_toStartOf="parent"
@@ -77,13 +115,14 @@
 
         <TextView
             android:id="@+id/tvDeadline"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
             android:text="Oct 24, 2026"
             android:textColor="#4B5563"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="@id/icDate"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/icDate"
             app:layout_constraintTop_toTopOf="@id/icDate" />
 

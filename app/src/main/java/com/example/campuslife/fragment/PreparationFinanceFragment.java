@@ -144,7 +144,7 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 if (position == 0) currentQueryStatus = null;
-                else if (position == 1) currentQueryStatus = "PENDING_ADMIN"; 
+                else if (position == 1) currentQueryStatus = "PENDING_LEADER";
                 else if (position == 2) currentQueryStatus = "APPROVED";
                 else currentQueryStatus = "REJECTED";
                 loadExpenses();
@@ -161,12 +161,12 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
                 if (resp.isSuccessful() && resp.body() != null && resp.body().isStatus()) {
                     FinanceOverviewReportDto d = resp.body().getData();
                     if (d != null) {
-                        tvTotal.setText("Total: " + formatMoney(d.totalBudget));
-                        tvSpent.setText("Spent: " + formatMoney(d.totalApprovedSpent));
+                        tvTotal.setText("Tổng ngân sách: " + formatMoney(d.totalBudget));
+                        tvSpent.setText("Đã chi: " + formatMoney(d.totalApprovedSpent));
                         try {
                             BigDecimal total = new BigDecimal(d.totalBudget != null ? d.totalBudget : "0");
                             BigDecimal spent = new BigDecimal(d.totalApprovedSpent != null ? d.totalApprovedSpent : "0");
-                            tvRemaining.setText("Remaining: " + formatMoney(total.subtract(spent).toString()));
+                            tvRemaining.setText("Còn lại: " + formatMoney(total.subtract(spent).toString()));
                         } catch (Exception ignored) {}
                     }
                 }
@@ -471,7 +471,7 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
         RecyclerView rv = view.findViewById(R.id.rvAllocationAdj);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        ApiClient.preparation(requireContext()).listAllocationAdjustments(activityId).enqueue(new Callback<ApiResponse<List<AllocationAdjustmentRequestDto>>>() {
+        ApiClient.preparation(requireContext()).listAllocationAdjustments(activityId, null).enqueue(new Callback<ApiResponse<List<AllocationAdjustmentRequestDto>>>() {
             @Override
             public void onResponse(Call<ApiResponse<List<AllocationAdjustmentRequestDto>>> call, Response<ApiResponse<List<AllocationAdjustmentRequestDto>>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {

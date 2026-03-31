@@ -120,28 +120,35 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/icLocation" />
 
-        <!-- Progress or Prep Status mapping -->
+        <!-- Preparation Status Badge -->
         <TextView
             android:id="@+id/tvPrepStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            tools:text="ĐANG CHUẨN BỊ"
-            android:textColor="@color/purple_primary"
+            android:layout_marginTop="10dp"
+            tools:text="🔧 CHUẨN BỊ"
+            android:textColor="#065F46"
             android:textSize="10sp"
             android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:background="@drawable/bg_pill_prep_active"
             app:layout_constraintStart_toStartOf="@id/icLocation"
             app:layout_constraintTop_toBottomOf="@id/tvMetrics"/>
 
+        <!-- Event Time Status -->
         <TextView
             android:id="@+id/tvDateStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="10dp"
             tools:text="🟢 Đang diễn ra"
             android:textColor="#059669"
             android:textSize="10sp"
             android:textStyle="bold"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="3dp"
+            android:background="@drawable/bg_pill_status"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvMetrics"/>
 
