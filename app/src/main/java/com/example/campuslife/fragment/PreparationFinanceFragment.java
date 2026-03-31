@@ -26,28 +26,31 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.campuslife.BuildConfig;
 import com.example.campuslife.R;
+import com.example.campuslife.adapter.AllocationAdjustmentAdapter;
 import com.example.campuslife.adapter.ExpenseAdapter;
+import com.example.campuslife.adapter.FundAdvanceDebtAdapter;
 import com.example.campuslife.api.ApiClient;
 import com.example.campuslife.api.ApiResponse;
 import com.example.campuslife.entity.preparation.ActivityBudgetDto;
+import com.example.campuslife.entity.preparation.AllocationAdjustmentRequestDto;
 import com.example.campuslife.entity.preparation.ApproveExpenseRequest;
 import com.example.campuslife.entity.preparation.BudgetCategoryDto;
 import com.example.campuslife.entity.preparation.CreateExpenseRequest;
 import com.example.campuslife.entity.preparation.ExpenseDto;
 import com.example.campuslife.entity.preparation.FinanceOverviewReportDto;
+import com.example.campuslife.entity.preparation.FundAdvanceDebtDto;
 import com.example.campuslife.entity.preparation.PreparationTaskDto;
 import com.example.campuslife.entity.preparation.UploadResultDto;
 import com.example.campuslife.utils.FileUtils;
 import com.example.campuslife.utils.ImageCompressUtil;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -59,12 +62,13 @@ import retrofit2.Response;
 public class PreparationFinanceFragment extends Fragment implements ExpenseAdapter.OnExpenseClickListener {
 
     private long activityId;
-    private String currentQueryStatus = "ALL";
+    private String currentQueryStatus = null;
 
-    private TextView tvTotal, tvSpent, tvRemaining, tvEmpty;
+    private TextView tvTotal, tvSpent, tvRemaining, tvEmpty, tvDebt;
     private Spinner spFilter;
     private ProgressBar progress;
     private RecyclerView rvExpenses;
+    private MaterialButton btnViewAllocationAdj;
     private ExpenseAdapter adapter;
 
     private Uri selectedEvidenceUri;
@@ -107,10 +111,19 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
         tvTotal = view.findViewById(R.id.tvTotal);
         tvSpent = view.findViewById(R.id.tvSpent);
         tvRemaining = view.findViewById(R.id.tvRemaining);
+        tvDebt = view.findViewById(R.id.tvDebt);
         tvEmpty = view.findViewById(R.id.tvEmpty);
         spFilter = view.findViewById(R.id.spFilter);
         progress = view.findViewById(R.id.progress);
         rvExpenses = view.findViewById(R.id.rvExpenses);
+        btnViewAllocationAdj = view.findViewById(R.id.btnViewAllocationAdj);
+        
+        boolean isAdmin = true; 
+        if (isAdmin) {
+            btnViewAllocationAdj.setVisibility(View.VISIBLE);
+            btnViewAllocationAdj.setOnClickListener(v -> showAllocationAdjBottomSheet());
+            tvDebt.setOnClickListener(v -> showDebtsBottomSheet());
+        }
 
         adapter = new ExpenseAdapter(this);
         rvExpenses.setLayoutManager(new LinearLayoutManager(requireContext()));
@@ -130,8 +143,8 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
         spFilter.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                if (position == 0) currentQueryStatus = "ALL";
-                else if (position == 1) currentQueryStatus = "PENDING";
+                if (position == 0) currentQueryStatus = null;
+                else if (position == 1) currentQueryStatus = "PENDING_ADMIN"; 
                 else if (position == 2) currentQueryStatus = "APPROVED";
                 else currentQueryStatus = "REJECTED";
                 loadExpenses();
@@ -160,6 +173,31 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
             }
             @Override
             public void onFailure(Call<ApiResponse<FinanceOverviewReportDto>> call, Throwable t) {}
+        });
+
+        ApiClient.preparation(requireContext()).listFundAdvanceDebts(activityId, null).enqueue(new Callback<ApiResponse<List<FundAdvanceDebtDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<FundAdvanceDebtDto>>> call, Response<ApiResponse<List<FundAdvanceDebtDto>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    List<FundAdvanceDebtDto> debts = response.body().getData();
+                    BigDecimal totalDebt = BigDecimal.ZERO;
+                    for (FundAdvanceDebtDto sum : debts) {
+                        if (sum.totalDebtAmount != null) {
+                            try {
+                                totalDebt = totalDebt.add(new BigDecimal(sum.totalDebtAmount));
+                            } catch (Exception ignored) {}
+                        }
+                    }
+                    if (totalDebt.compareTo(BigDecimal.ZERO) > 0) {
+                        tvDebt.setVisibility(View.VISIBLE);
+                        tvDebt.setText("Tiền mặt chưa hoàn: " + formatMoney(totalDebt.toString()) + " (Xem chi tiết)");
+                    } else {
+                        tvDebt.setVisibility(View.GONE);
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<FundAdvanceDebtDto>>> call, Throwable t) {}
         });
     }
 
@@ -213,7 +251,6 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
         llUpload.setOnClickListener(x -> pickImageLauncher.launch("image/*"));
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-        // Load Categories
         ApiClient.preparation(requireContext()).getActivityBudget(activityId).enqueue(new Callback<ApiResponse<ActivityBudgetDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<ActivityBudgetDto>> call, Response<ApiResponse<ActivityBudgetDto>> response) {
@@ -233,7 +270,6 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
             public void onFailure(Call<ApiResponse<ActivityBudgetDto>> call, Throwable t) {}
         });
 
-        // Load Tasks
         ApiClient.preparation(requireContext()).getDashboard(activityId).enqueue(new Callback<ApiResponse<com.example.campuslife.entity.preparation.PreparationDashboardDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<com.example.campuslife.entity.preparation.PreparationDashboardDto>> call, Response<ApiResponse<com.example.campuslife.entity.preparation.PreparationDashboardDto>> response) {
@@ -256,6 +292,9 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
             String amount = etAmount.getText() != null ? etAmount.getText().toString().trim() : "";
             String desc = etDesc.getText() != null ? etDesc.getText().toString().trim() : "";
             
+            if (selectedTaskId == null) {
+                toast("Vui lòng chọn Task"); return;
+            }
             if (selectedCategoryId == null) {
                 toast("Vui lòng chọn Hạng mục"); return;
             }
@@ -287,7 +326,7 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
             RequestBody rb = RequestBody.create(file, MediaType.parse("image/jpeg"));
             MultipartBody.Part part = MultipartBody.Part.createFormData("file", file.getName(), rb);
 
-            ApiClient.preparation(requireContext()).uploadEvidence(activityId, part).enqueue(new Callback<ApiResponse<UploadResultDto>>() {
+            ApiClient.preparation(requireContext()).uploadEvidence(selectedTaskId, part).enqueue(new Callback<ApiResponse<UploadResultDto>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<UploadResultDto>> call, Response<ApiResponse<UploadResultDto>> resp) {
                     if (resp.isSuccessful() && resp.body() != null && resp.body().isStatus() && resp.body().getData() != null) {
@@ -310,7 +349,7 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
 
     private void createExpense(Long taskId, Long categoryId, String amount, String desc, String url, BottomSheetDialog dialog, View btnSubmit) {
         ApiClient.preparation(requireContext())
-            .createExpense(activityId, new CreateExpenseRequest(taskId, categoryId, amount, desc, url))
+            .createExpense(taskId, new CreateExpenseRequest(taskId, categoryId, amount, desc, url))
             .enqueue(new Callback<ApiResponse<ExpenseDto>>() {
                 @Override
                 public void onResponse(Call<ApiResponse<ExpenseDto>> call, Response<ApiResponse<ExpenseDto>> resp) {
@@ -354,23 +393,30 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
             Glide.with(this).load(fullUrl).into(ivDetail);
         }
 
-        // Handle Approval logic: Wait, we also need to check role. For now we just show.
-        // If not PENDING and not Admin/Leader, maybe we hide buttons. Let Backend reject if unauthorized.
         if ("APPROVED".equals(expense.status) || "REJECTED".equals(expense.status)) {
             btnApprove.setVisibility(View.GONE);
             btnReject.setVisibility(View.GONE);
         }
 
-        btnApprove.setOnClickListener(v -> submitApproval(expense.id, true, dialog));
-        btnReject.setOnClickListener(v -> submitApproval(expense.id, false, dialog));
+        btnApprove.setOnClickListener(v -> submitApproval(expense.id, expense.status, true, dialog));
+        btnReject.setOnClickListener(v -> submitApproval(expense.id, expense.status, false, dialog));
         btnClose.setOnClickListener(v -> dialog.dismiss());
 
         dialog.show();
     }
 
-    private void submitApproval(Long expenseId, boolean approve, BottomSheetDialog dialog) {
+    private void submitApproval(Long expenseId, String currentStatus, boolean approve, BottomSheetDialog dialog) {
         showLoading(true);
-        ApiClient.preparation(requireContext()).approveExpense(expenseId, new ApproveExpenseRequest(approve)).enqueue(new Callback<ApiResponse<ExpenseDto>>() {
+        ApproveExpenseRequest req = new ApproveExpenseRequest(approve);
+
+        Call<ApiResponse<ExpenseDto>> apiCall;
+        if ("PENDING_LEADER".equals(currentStatus)) {
+            apiCall = ApiClient.preparation(requireContext()).leaderDecisionExpense(expenseId, req);
+        } else {
+            apiCall = ApiClient.preparation(requireContext()).adminDecisionExpense(expenseId, req);
+        }
+
+        apiCall.enqueue(new Callback<ApiResponse<ExpenseDto>>() {
             @Override
             public void onResponse(Call<ApiResponse<ExpenseDto>> call, Response<ApiResponse<ExpenseDto>> resp) {
                 showLoading(false);
@@ -388,6 +434,60 @@ public class PreparationFinanceFragment extends Fragment implements ExpenseAdapt
                 toast("Lỗi mạng: " + t.getMessage());
             }
         });
+    }
+
+    private void showDebtsBottomSheet() {
+        BottomSheetDialog bsDialog = new BottomSheetDialog(requireContext());
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.layout_bottom_sheet_debts, null);
+        bsDialog.setContentView(view);
+
+        RecyclerView rv = view.findViewById(R.id.rvDebts);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        ApiClient.preparation(requireContext()).listFundAdvanceDebts(activityId, null).enqueue(new Callback<ApiResponse<List<FundAdvanceDebtDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<FundAdvanceDebtDto>>> call, Response<ApiResponse<List<FundAdvanceDebtDto>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    FundAdvanceDebtAdapter adapter = new FundAdvanceDebtAdapter(requireContext(), response.body().getData());
+                    rv.setAdapter(adapter);
+                } else {
+                    Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<FundAdvanceDebtDto>>> call, Throwable t) {
+                Toast.makeText(requireContext(), "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        bsDialog.show();
+    }
+
+    private void showAllocationAdjBottomSheet() {
+        BottomSheetDialog bsDialog = new BottomSheetDialog(requireContext());
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.layout_bottom_sheet_allocation_adj, null);
+        bsDialog.setContentView(view);
+
+        RecyclerView rv = view.findViewById(R.id.rvAllocationAdj);
+        rv.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        ApiClient.preparation(requireContext()).listAllocationAdjustments(activityId).enqueue(new Callback<ApiResponse<List<AllocationAdjustmentRequestDto>>>() {
+            @Override
+            public void onResponse(Call<ApiResponse<List<AllocationAdjustmentRequestDto>>> call, Response<ApiResponse<List<AllocationAdjustmentRequestDto>>> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getData() != null) {
+                    AllocationAdjustmentAdapter adapter = new AllocationAdjustmentAdapter(requireContext(), response.body().getData(), true, activityId);
+                    rv.setAdapter(adapter);
+                } else {
+                    Toast.makeText(requireContext(), "Lỗi tải dữ liệu", Toast.LENGTH_SHORT).show();
+                }
+            }
+            @Override
+            public void onFailure(Call<ApiResponse<List<AllocationAdjustmentRequestDto>>> call, Throwable t) {
+                Toast.makeText(requireContext(), "Lỗi kết nối", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        bsDialog.show();
     }
 
     private void showLoading(boolean show) {

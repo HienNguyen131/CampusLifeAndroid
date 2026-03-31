@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="24dp"
+    app:cardBackgroundColor="#FFFFFF"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="8dp"
+    app:strokeWidth="0dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:padding="24dp">
+
+        <!-- Decorative Icon Container -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="#F0FDF4"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="0dp">
+            
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:src="@android:drawable/ic_menu_send"
+                app:tint="@color/success_green" />
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Phê duyệt Tạm Ứng"
+            android:textColor="@color/text_dark"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textAlignment="center" />
+
+        <!-- Request Details -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/bg_details_soft"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/tvDetailStudentName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Nguyễn Minh Tuấn"
+                android:textColor="@color/text_dark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/tvDetailCategory"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="Ví nguồn: VẬN HÀNH SỰ KIỆN"
+                android:textColor="@color/text_muted"
+                android:textSize="13sp"
+                android:layout_marginBottom="12dp" />
+
+            <TextView
+                android:id="@+id/tvDetailAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:text="1.500.000đ"
+                android:textColor="@color/primary_orange"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Validation Warning -->
+        <TextView
+            android:id="@+id/tvWarning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="Sinh viên này hiện đang không có nợ tồn đọng."
+            android:textColor="@color/error_red"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:textAlignment="center" />
+
+        <!-- Action Buttons -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnApproveFund"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Phê Duyệt - Xuất Tiền"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            app:backgroundTint="@color/success_green"
+            app:cornerRadius="14dp"
+            app:elevation="2dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRejectFund"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_marginTop="12dp"
+            android:text="Từ Chối"
+            android:textAllCaps="false"
+            android:textColor="@color/error_red"
+            android:textStyle="bold"
+            app:strokeColor="@color/error_red"
+            app:cornerRadius="14dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClose"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Hủy"
+            android:textColor="@color/text_muted" />
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
